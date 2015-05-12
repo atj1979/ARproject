@@ -47,7 +47,6 @@
 			context = canvas.getContext("2d");
 			video = document.getElementById("video");
 
-
 			// My code - overlay the canvas on top of the video.
 			canvas.setAttribute("style", "left:" + video.offsetLeft + "px");
 			canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
@@ -72,7 +71,6 @@
 			} else if(navigator.webkitGetUserMedia) { 
 				// WebKit-prefixed
 				console.log("got to STAGE 2 - WebKit-prefixed");
-				takePicture();
 				navigator.webkitGetUserMedia(videoObj, function(stream){
 					video.src = window.webkitURL.createObjectURL(stream);
 					video.play();
@@ -91,21 +89,23 @@
 		// Located from MDN WebRTC_API Taking Still Photos
 		function takePicture() {
 	    var context = canvas.getContext('2d');
-	    if (true /*width && height*/) {
-	      // canvas.width = width;
-	      // canvas.height = height;
-	      // context.drawImage(video, 0, 0, width, height);
+	   
 	      context.drawImage(video, 0, 0);
-	      var data = canvas.toDataURL('image/png');
-	    	
-	      //The data here is the actual image data as a png
-	    	console.log(data);
-	      // photo.setAttribute('src', data);
-	    } else {
-	      // clearphoto();
-	    }
+
+
+	      //get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
+	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
+	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
+	    	console.dir(data);
+
+
+	    	//clear the canvas after we have our data
+	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+	    
 	    console.log("takePicture worked!!!!")
 	  }
+		document.getElementById("snap").addEventListener('click', function (){takePicture()
+		});
 
 	</script>
 </html>
