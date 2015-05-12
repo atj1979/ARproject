@@ -116,24 +116,33 @@
 			// if machine learning can be found to be reasonable with time (local calculation likely)
 
 			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes. 
-			//another idea with M Macatano, create color count for blocks of  
+			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
 		}
-		function xyTranslate (inputIndex){
-			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.
+		function xyTranslate (inputIndex, picData){
+			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
 			result = {};
+			// var canvas ={};
+			// var canvas.width = 640;
+			// keep referneces to calc number so there aren't multiple calculations for the same stuff.
+			var numAll = inputIndex / canvas.width;
+			var yCalc = Math.floor(numAll);
+			var numX = ((numAll - yCalc) * canvas.width);
+			var xCalc = Math.floor( numX / 4 );
+			
 			//get y - divide by canvas.width to get row
-			result.y = Math.floor(inputIndex/canvas.width);
+			result.y = yCalc;
 			//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
+			result.x = xCalc;
 
+			if (picData){
 			//right of the decimal is which RGB or A , R=.00, G=.25, B=.5, A=.75
-
-
-
-
-
-
-
-
+			// get start index the do the count up from there.
+			var startInd = Math.floor( inputIndex / 4 ) * 4; 
+				result.r = picData[startInd];
+				result.g = picData[startInd + 1];
+				result.b = picData[startInd + 2];
+				result.a = picData[startInd + 3];
+			}
 			return result;
 		}
 
