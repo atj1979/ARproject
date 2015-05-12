@@ -53,7 +53,7 @@
 			canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
 
 			//videoObj are the constraints of the video stream
-			videoObj = { "video": true , "audio":false};
+			videoObj = { "video": true , "audio" :false};
 			errBack = function(error) {
 				console.log("Video capture error: ", error.code); 
 			};
@@ -62,20 +62,25 @@
 			if(navigator.getUserMedia) { // Standard
 				navigator.getUserMedia(videoObj, function(stream) {
 					if (!ONCE){
-						console.log("got to here");
+						console.log("got to STAGE 1 - vanilla flavor");
 						console.log(stream);
 						ONCE=true;
 					}
 					video.src = stream;
 					video.play();
 				}, errBack);
-			} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+			} else if(navigator.webkitGetUserMedia) { 
+				// WebKit-prefixed
+				console.log("got to STAGE 2 - WebKit-prefixed");
+				takePicture();
 				navigator.webkitGetUserMedia(videoObj, function(stream){
 					video.src = window.webkitURL.createObjectURL(stream);
 					video.play();
 				}, errBack);
 			}
-			else if(navigator.mozGetUserMedia) { // Firefox-prefixed
+			else if(navigator.mozGetUserMedia) { 
+				// Firefox-prefixed
+				console.log("got to STAGE 3 - Firefox-prefixed");
 				navigator.mozGetUserMedia(videoObj, function(stream){
 					video.src = window.URL.createObjectURL(stream);
 					video.play();
@@ -84,18 +89,20 @@
 		}, false);
 
 		// Located from MDN WebRTC_API Taking Still Photos
-		function takepicture() {
+		function takePicture() {
 	    var context = canvas.getContext('2d');
-	    if (width && height) {
-	      canvas.width = width;
-	      canvas.height = height;
-	      context.drawImage(video, 0, 0, width, height);
-	    
+	    if (true /*width && height*/) {
+	      // canvas.width = width;
+	      // canvas.height = height;
+	      // context.drawImage(video, 0, 0, width, height);
+	      context.drawImage(video, 0, 0);
 	      var data = canvas.toDataURL('image/png');
-	      photo.setAttribute('src', data);
+	    	console.log(data);
+	      // photo.setAttribute('src', data);
 	    } else {
-	      clearphoto();
+	      // clearphoto();
 	    }
+	    console.log("takePicture worked!!!!")
 	  }
 
 	</script>
