@@ -106,6 +106,7 @@
 	  }
 		document.getElementById("snap").addEventListener('click', function (){takePicture()
 		});
+
 		function processImage (searchSignature, overlay){
 			// searchSignature is an object containing minWidth, minHeight, maxHeight, maxWidth, minRed, maxRed, minBlue, maxBlue, minGreen, maxGreen - all opacity will be assumed @255, so no setting provided
 			//optional --> lines equations to identify points/ratios of object proportions
@@ -114,8 +115,28 @@
 
 			// if machine learning can be found to be reasonable with time (local calculation likely)
 
-			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes.  
+			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes. 
+			//another idea with M Macatano, create color count for blocks of  
 		}
+		function xyTranslate (inputIndex){
+			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.
+			result = {};
+			//get y - divide by canvas.width to get row
+			result.y = Math.floor(inputIndex/canvas.width);
+			//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
+
+			//right of the decimal is which RGB or A , R=.00, G=.25, B=.5, A=.75
+
+
+
+
+
+
+
+
+			return result;
+		}
+
 
 	</script>
 </html>
