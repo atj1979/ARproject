@@ -1,11 +1,102 @@
 <!DOCTYPE html>
 <html>
 	<head>
+
+	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	</head>
 	<body>
 		<h1>AR Project</h1>
 		<h4>Construction Zone!!!!!!</h4>
+
+		<!--  Code taken from http://davidwalsh.name/browser-camera
+		Ideally these elements aren't created until it's confirmed that the 
+		client supports video/camera, but for the sake of illustrating the 
+		elements involved, they are created with markup (not JavaScript)
+		-->
+		<video id="video" width="640" height="480" autoplay></video>
+		<button id="snap">Snap Photo</button>
+		<canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
+
+
+
 	</body>
+	<script>
 
 
+
+	/* Image process idea.  
+		per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
+		per image if pixel color matches designated color within a range, 
+			begin searching surrounding pixels, 
+				Stage 1 : only store left most, right most, top most, bottom most 
+					This gets a box to work with
+				Stage 2 : identify local minimums and maximums within range of +/- a few pixels 
+					This should get us points to draw a line and identify an aspect for image rendering and aid in shape recognition
+	*/
+
+
+
+
+
+
+		// Code taken from http://davidwalsh.name/browser-camera
+		// Put event listeners into place
+		window.addEventListener("DOMContentLoaded", function() {
+			// Grab elements, create settings, etc.
+			canvas = document.getElementById("canvas");
+			context = canvas.getContext("2d");
+			video = document.getElementById("video");
+
+
+			// My code - overlay the canvas on top of the video.
+			canvas.setAttribute("style", "left:" + video.offsetLeft + "px");
+			canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
+
+			//videoObj are the constraints of the video stream
+			videoObj = { "video": true , "audio":false};
+			errBack = function(error) {
+				console.log("Video capture error: ", error.code); 
+			};
+			var ONCE = false;
+			// Put video listeners into place
+			if(navigator.getUserMedia) { // Standard
+				navigator.getUserMedia(videoObj, function(stream) {
+					if (!ONCE){
+						console.log("got to here");
+						console.log(stream);
+						ONCE=true;
+					}
+					video.src = stream;
+					video.play();
+				}, errBack);
+			} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
+				navigator.webkitGetUserMedia(videoObj, function(stream){
+					video.src = window.webkitURL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			}
+			else if(navigator.mozGetUserMedia) { // Firefox-prefixed
+				navigator.mozGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			}
+		}, false);
+
+		// Located from MDN WebRTC_API Taking Still Photos
+		function takepicture() {
+	    var context = canvas.getContext('2d');
+	    if (width && height) {
+	      canvas.width = width;
+	      canvas.height = height;
+	      context.drawImage(video, 0, 0, width, height);
+	    
+	      var data = canvas.toDataURL('image/png');
+	      photo.setAttribute('src', data);
+	    } else {
+	      clearphoto();
+	    }
+	  }
+
+	</script>
 </html>
