@@ -43,17 +43,17 @@
 		// Put event listeners into place
 		window.addEventListener("DOMContentLoaded", function() {
 			// Grab elements, create settings, etc.
-			canvas = document.getElementById("canvas");
-			context = canvas.getContext("2d");
-			video = document.getElementById("video");
+			var canvas = document.getElementById("canvas");
+			var context = canvas.getContext("2d");
+			var video = document.getElementById("video");
 
 			// My code - overlay the canvas on top of the video.
-			canvas.setAttribute("style", "left:" + video.offsetLeft + "px");
-			canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
+			// canvas.setAttribute("style", "left:" + video.offsetLeft + "px");
+			// canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
 
 			//videoObj are the constraints of the video stream
-			videoObj = { "video": true , "audio" :false};
-			errBack = function(error) {
+			var videoObj = { "video": true , "audio" :false};
+			var errBack = function (error) {
 				console.log("Video capture error: ", error.code); 
 			};
 			var ONCE = false;
@@ -87,7 +87,7 @@
 		}, false);
 
 		// Located from MDN WebRTC_API Taking Still Photos
-		function takePicture() {
+		function takePicture () {
 	    var context = canvas.getContext('2d');
 	   
 	      //I think we have to draw the image in order to get the data from it.
@@ -108,7 +108,7 @@
 
 		document.getElementById("snap").addEventListener('click', function (){
 			takePicture();
-			// setInterval(takePicture, 100);
+			// setInterval(takePicture, 30);
 		});
 
 		function processImage (context, imgData, searchSignature, canvasWidth, overlay){
@@ -123,40 +123,68 @@
 
 			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes. 
 			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
-
 			//Basic Search - search every pixel.
 			//make new array to store results
-			context.fillStyle = "black";
-			// var results = context.createImgData(imgData)
+			var resolution = 4;
 			var pos;
-			// console.log(imgData.data.length);
+			var average = {
+				x:0,
+				y:0,
+				counter:0
+			};
+
 			//guessed mcdonalds colors >150, >150, <120 RGB
-			for (var i = 0; i < imgData.data.length; i+=8){
+			// better color identification could be identified by 3 phase - vector analysis
+			context.fillStyle = "yellow";
+			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
 						imgData.data[i]>150 && 
 						imgData.data[i+1]>150 && 
-
-						imgData.data[i+2]<120
+						// imgData.data[i+1]<220 &&
+						imgData.data[i+2]<110
 				){
-					// console.log(imgData.data[i] + " || " + imgData.data[i+1] + " || " + imgData.data[i+2]);
 					pos = xyTranslate(i, canvasWidth);
-					context.fillRect(pos.x, pos.y, 2, 2);
+					average.counter+=1;
+					average.x+=pos.x;
+					average.y+=pos.y;
+					context.fillRect(pos.x, pos.y, 3, 2);
 				}
 			}
+			average.x=average.x/average.counter;
+			average.y=average.y/average.counter;
+			// console.log(average);
+			context.fillStyle = "black";
+			context.fillRect(average.x, average.y, 4, 4);
 
 
 			var stop = new Date;
-			console.log(start-stop);
+			// console.log("Calc time each frame",stop-start);
 		};
+
 		function colorCount (colorObj){
 			//will get a count of pixels within a color range.
 			//colorObj will contain min and max values for each RGB. 
 		};
-		function bloomSearch(startIndex, canvasWidth){
+
+		function bloomSearch (startIndex, canvasWidth){
 			//bloomSearch will search surrounding areas for further indication of desired image.
 
 		};
+		function vectorDetection (){};
+		function mirrorDetection (){};
+		function noiseReduce (inputX, inputY, canvasWidth, picData, radius, layers){
+			//Idea - check surrounding radius of pixels to determine if checked pixel is noise or valid object
+		};
+		function blobMeanLines (startX, startY, context, canvasWidth){
 
+			//create 2 lines extending on x axis and y axis.  take the longest between the two and place a dot in the middle of the longest line. extend 
+
+		};
+
+		function pxTranslate (inputX, inputY, canvasWidth, picData){
+			//function will take an x and y input for a position in canvas and respond with the pixel index starting at R.
+			return inputY*canvasWidth+inputX-1;
+		};
 
 		function xyTranslate (inputIndex, canvasWidth, picData){
 			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
@@ -174,7 +202,6 @@
 			result.x = xCalc;
 
 			if (picData){
-			//right of the decimal is which RGB or A , R=.00, G=.25, B=.5, A=.75
 			// get start index the do the count up from there.
 			var startInd = Math.floor( inputIndex / 4 ) * 4; 
 				result.r = picData[startInd];
