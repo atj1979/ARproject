@@ -90,26 +90,32 @@
 		function takePicture() {
 	    var context = canvas.getContext('2d');
 	   
+	      //I think we have to draw the image in order to get the data from it.
 	      context.drawImage(video, 0, 0);
-
 
 	      //get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
 	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
 	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
-	    	console.dir(data);
-
+	    	// console.dir(data);
 
 	    	//clear the canvas after we have our data
+	    	
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-	    
-	    console.log("takePicture worked!!!!")
+	    	// context.drawImage(data, 0, 0);
+	    	processImage(context, data, null,canvas.width);
+	    // console.log("takePicture worked!!!!")
 	  }
-		document.getElementById("snap").addEventListener('click', function (){takePicture()
+
+		document.getElementById("snap").addEventListener('click', function (){
+			takePicture();
+			// setInterval(takePicture, 100);
 		});
 
-		function processImage (searchSignature, overlay){
+		function processImage (context, imgData, searchSignature, canvasWidth, overlay){
+			var start = new Date;
 			// searchSignature is an object containing minWidth, minHeight, maxHeight, maxWidth, minRed, maxRed, minBlue, maxBlue, minGreen, maxGreen - all opacity will be assumed @255, so no setting provided
 			//optional --> lines equations to identify points/ratios of object proportions
+
 
 			//overlay will be an object containing whatever we want to overlay with meta-data for desired size based on % of found object 
 
@@ -117,16 +123,49 @@
 
 			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes. 
 			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
-		}
-		function xyTranslate (inputIndex, picData){
+
+			//Basic Search - search every pixel.
+			//make new array to store results
+			context.fillStyle = "black";
+			// var results = context.createImgData(imgData)
+			var pos;
+			// console.log(imgData.data.length);
+			//guessed mcdonalds colors >150, >150, <120 RGB
+			for (var i = 0; i < imgData.data.length; i+=8){
+				if (
+						imgData.data[i]>150 && 
+						imgData.data[i+1]>150 && 
+
+						imgData.data[i+2]<120
+				){
+					// console.log(imgData.data[i] + " || " + imgData.data[i+1] + " || " + imgData.data[i+2]);
+					pos = xyTranslate(i, canvasWidth);
+					context.fillRect(pos.x, pos.y, 2, 2);
+				}
+			}
+
+
+			var stop = new Date;
+			console.log(start-stop);
+		};
+		function colorCount (colorObj){
+			//will get a count of pixels within a color range.
+			//colorObj will contain min and max values for each RGB. 
+		};
+		function bloomSearch(startIndex, canvasWidth){
+			//bloomSearch will search surrounding areas for further indication of desired image.
+
+		};
+
+
+		function xyTranslate (inputIndex, canvasWidth, picData){
 			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
 			result = {};
-			// var canvas ={};
-			// var canvas.width = 640;
+
 			// keep referneces to calc number so there aren't multiple calculations for the same stuff.
-			var numAll = inputIndex / canvas.width;
+			var numAll = inputIndex / (canvasWidth * 4);
 			var yCalc = Math.floor(numAll);
-			var numX = ((numAll - yCalc) * canvas.width);
+			var numX = ((numAll - yCalc) * (canvasWidth * 4 ));
 			var xCalc = Math.floor( numX / 4 );
 			
 			//get y - divide by canvas.width to get row
