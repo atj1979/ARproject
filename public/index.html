@@ -16,7 +16,9 @@
 		<video id="video" width="640" height="480" autoplay></video>
 		<button id="snap">Snap Photo</button>
 		<canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
-
+		<div style="display:none;">
+		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
+		</div>
 
 
 	</body>
@@ -89,26 +91,23 @@
 		// Located from MDN WebRTC_API Taking Still Photos
 		function takePicture () {
 	    var context = canvas.getContext('2d');
-	   
+	   	var img = document.getElementById('source');
 	      //I think we have to draw the image in order to get the data from it.
 	      context.drawImage(video, 0, 0);
 
 	      //get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
 	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
 	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
-	    	// console.dir(data);
 
 	    	//clear the canvas after we have our data
-	    	
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-	    	// context.drawImage(data, 0, 0);
-	    	processImage(context, data, null,canvas.width);
+	    	processImage(context, data, null, canvas.width, img);
 	    // console.log("takePicture worked!!!!")
 	  }
 
 		document.getElementById("snap").addEventListener('click', function (){
 			takePicture();
-			// setInterval(takePicture, 30);
+			setInterval(takePicture, 30);
 		});
 
 		function processImage (context, imgData, searchSignature, canvasWidth, overlay){
@@ -125,7 +124,7 @@
 			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
 			//Basic Search - search every pixel.
 			//make new array to store results
-			var resolution = 4;
+			var resolution = 8;
 			var pos;
 			var average = {
 				x:0,
@@ -135,13 +134,12 @@
 
 			//guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
-			context.fillStyle = "yellow";
+			//context.fillStyle = "yellow";
+			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
-						imgData.data[i]>150 && 
-						imgData.data[i+1]>150 && 
-						// imgData.data[i+1]<220 &&
-						imgData.data[i+2]<110
+					colorFilter(imgData, i) &&
+					noiseReduce(imgData, i, canvasWidth);
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
@@ -153,8 +151,9 @@
 			average.x=average.x/average.counter;
 			average.y=average.y/average.counter;
 			// console.log(average);
-			context.fillStyle = "black";
-			context.fillRect(average.x, average.y, 4, 4);
+			//context.fillStyle = "black";
+			context.drawImage(overlay,average.x, average.y, 423, 119);
+			//context.fillRect(average.x, average.y, resolution, resolution);
 
 
 			var stop = new Date;
@@ -166,14 +165,56 @@
 			//colorObj will contain min and max values for each RGB. 
 		};
 
+		function colorFilter(imgData, pixelNum, colorObj){
+			// will return true or false based on wheter a the pixel color is within the specified range
+			if (
+				imgData.data[pixelNum]>150 && 
+				imgData.data[pixelNum+1]>150 && 
+				// imgData.data[i+1]<220 &&
+				imgData.data[pixelNum+2]<110
+				)
+			{
+				return true;
+			} else {
+				return false;
+			}
+
+		};
 		function bloomSearch (startIndex, canvasWidth){
 			//bloomSearch will search surrounding areas for further indication of desired image.
 
 		};
 		function vectorDetection (){};
 		function mirrorDetection (){};
-		function noiseReduce (inputX, inputY, canvasWidth, picData, radius, layers){
+		function noiseReduce (imgData, pixelNum, canvasWidth, radius, layers){
+			radius = radius || 1;
 			//Idea - check surrounding radius of pixels to determine if checked pixel is noise or valid object
+			//one method is to average the surrounding 8 pixels
+			//another method is to count the number of pixels in that 3x3 within the color range.
+			//return a true if pixel is valid
+			// radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
+
+			//get current x and y
+			var pixel = xyTranslate(pixelNum, canvasWidth);
+			var count = 0;
+			//filter down because I'm tired.
+			for (var i = 0; i < 4; i++){
+				if (colorFilter(imgData, pixelNum+i*canvasWidth)){
+					count++;
+				}
+			}
+			if (count>=3){
+				return true;
+			} else {
+				return false;
+			}
+			//get list of 8 indicies of pixels to check. Simple - do clockwise
+
+
+			// check surrounding pixels - do not search within search radius of edge 
+			//check vs method - 
+
+
 		};
 		function blobMeanLines (startX, startY, context, canvasWidth){
 

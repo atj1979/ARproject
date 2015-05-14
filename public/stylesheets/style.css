@@ -8,12 +8,12 @@ a {
 }
 
 canvas {
-	/*float:left;*/
-	/*z-index: 1*/
+	float:left;
+	z-index: 1
 }
 
 video {
-	/*float:left;*/
-	/*position:absolute;*/
+	float:left;
+	position:absolute;
 	z-index: -1;
 }
