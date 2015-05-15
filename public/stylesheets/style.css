@@ -8,12 +8,18 @@ a {
 }
 
 canvas {
-	float:left;
+	/*float:left;*/
 	z-index: 1
 }
 
 video {
-	float:left;
-	position:absolute;
+	/*float:left;*/
+	/*position:absolute;*/
 	z-index: -1;
+}
+
+#resultColor {
+	background-color: yellow;
+	width:20px;
+	height:20px;
 }

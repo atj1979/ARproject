@@ -15,6 +15,17 @@
 		-->
 		<video id="video" width="640" height="480" autoplay></video>
 		<button id="snap">Snap Photo</button>
+		<div id="resultColor">
+			<div>RED<input id="red" type="number"  /></div>
+			<div>GREEN<input id="green" type="number" /></div>
+			<div>BLUE<input id="blue" type="number" /></div>
+		</div>
+		<form id="color">
+			<input id="background-color" 
+				type="color" 
+				value="#ff0000" 
+				onchange="">
+		</form>
 		<canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
 		<div style="display:none;">
 		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
@@ -89,7 +100,7 @@
 		}, false);
 
 		// Located from MDN WebRTC_API Taking Still Photos
-		function takePicture () {
+		function takePicture (colorObj) {
 	    var context = canvas.getContext('2d');
 	   	var img = document.getElementById('source');
 	      //I think we have to draw the image in order to get the data from it.
@@ -101,16 +112,21 @@
 
 	    	//clear the canvas after we have our data
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-	    	processImage(context, data, null, canvas.width, img);
+	    	processImage(context, data, null, canvas.width, img, colorObj);
 	    // console.log("takePicture worked!!!!")
 	  }
 
 		document.getElementById("snap").addEventListener('click', function (){
-			takePicture();
-			setInterval(takePicture, 30);
+			var colorObj=hexToRGB(document.getElementById("background-color").value)
+			document.getElementById('red').value=colorObj.r;
+			document.getElementById('green').value=colorObj.g;
+			document.getElementById('blue').value=colorObj.b;
+			takePicture(colorObj);
+			// console.log('PID of SetInterval = ',);
+			setInterval(takePicture, 30)
 		});
 
-		function processImage (context, imgData, searchSignature, canvasWidth, overlay){
+		function processImage (context, imgData, searchSignature, canvasWidth, overlay, colorObj){
 			var start = new Date;
 			// searchSignature is an object containing minWidth, minHeight, maxHeight, maxWidth, minRed, maxRed, minBlue, maxBlue, minGreen, maxGreen - all opacity will be assumed @255, so no setting provided
 			//optional --> lines equations to identify points/ratios of object proportions
@@ -138,26 +154,25 @@
 			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
-					colorFilter(imgData, i) &&
-					noiseReduce(imgData, i, canvasWidth);
+					colorFilter(imgData, i, colorObj)
+					&& noiseReduce(imgData, i, canvasWidth, colorObj)
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
 					average.x+=pos.x;
 					average.y+=pos.y;
-					context.fillRect(pos.x, pos.y, 3, 2);
+					context.fillRect(pos.x, pos.y, 3, 3);
 				}
 			}
 			average.x=average.x/average.counter;
 			average.y=average.y/average.counter;
-			// console.log(average);
-			//context.fillStyle = "black";
-			context.drawImage(overlay,average.x, average.y, 423, 119);
+			context.fillStyle = "black";
+
+			//context.drawImage(overlay,average.x, average.y, 423, 119);
 			//context.fillRect(average.x, average.y, resolution, resolution);
 
-
 			var stop = new Date;
-			// console.log("Calc time each frame",stop-start);
+			console.log("Calc time each frame",stop-start);
 		};
 
 		function colorCount (colorObj){
@@ -165,13 +180,38 @@
 			//colorObj will contain min and max values for each RGB. 
 		};
 
-		function colorFilter(imgData, pixelNum, colorObj){
+		function hexToRGB (hexVal){
+			function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+			function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+			function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+			function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+			var colorObj ={};
+			colorObj.r = hexToR(hexVal);
+			colorObj.g = hexToG(hexVal);
+			colorObj.b = hexToB(hexVal);
+			return colorObj;
+		}
+
+		function colorFilter(imgData, pixelNum, colorObj, range){
 			// will return true or false based on wheter a the pixel color is within the specified range
+			// an actual solution will involve color calculation in a color cube.   
+			// console.log(colorObj);
+			range = range || 1;
+			var red = 150;
+			var green = 150;
+			var blue =  110;
+			if (colorObj){
+				red = colorObj.r;
+				green = colorObj.g;
+				blue = colorObj.b;
+			}
+
+
 			if (
-				imgData.data[pixelNum]>150 && 
-				imgData.data[pixelNum+1]>150 && 
+				imgData.data[pixelNum]> red && 
+				imgData.data[pixelNum+1]> blue && 
 				// imgData.data[i+1]<220 &&
-				imgData.data[pixelNum+2]<110
+				imgData.data[pixelNum+2]< green
 				)
 			{
 				return true;
@@ -186,7 +226,7 @@
 		};
 		function vectorDetection (){};
 		function mirrorDetection (){};
-		function noiseReduce (imgData, pixelNum, canvasWidth, radius, layers){
+		function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 			radius = radius || 1;
 			//Idea - check surrounding radius of pixels to determine if checked pixel is noise or valid object
 			//one method is to average the surrounding 8 pixels
@@ -195,11 +235,10 @@
 			// radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
 
 			//get current x and y
-			var pixel = xyTranslate(pixelNum, canvasWidth);
 			var count = 0;
 			//filter down because I'm tired.
 			for (var i = 0; i < 4; i++){
-				if (colorFilter(imgData, pixelNum+i*canvasWidth)){
+				if (colorFilter(imgData, pixelNum+i, colorObj)){
 					count++;
 				}
 			}
