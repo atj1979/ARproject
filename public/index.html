@@ -123,7 +123,7 @@
 			document.getElementById('blue').value=colorObj.b;
 			takePicture(colorObj);
 			// console.log('PID of SetInterval = ',);
-			setInterval(takePicture, 30)
+			// setInterval(takePicture, 30)
 		});
 
 		function processImage (context, imgData, searchSignature, canvasWidth, overlay, colorObj){
@@ -190,42 +190,56 @@
 			colorObj.g = hexToG(hexVal);
 			colorObj.b = hexToB(hexVal);
 			return colorObj;
-		}
+		};
+
+		function colorRange(centerColor, compColor, range){
+			//distance = sqrt((r1-r2)^2+(g1-g2)^2+(b1-b2)^2)
+			//the formula will be changed such that distance/range will be squared to prevent using Math.sqrt() because it is an expensive operation. Also Math.pow() will not be used because it is also slightly more expensive, because the function call is slightly more expensive. 
+			// console.log(compColor);
+
+			if (
+				range * range  >= 
+					(centerColor.r - compColor.r) * (centerColor.r - compColor.r) +
+					(centerColor.g - compColor.g) * (centerColor.g - compColor.g) +
+					(centerColor.b - compColor.b) * (centerColor.b - compColor.b)
+			){
+				console.log(range*range);
+				return true;
+			} else {
+				return false;
+			}
+		};
 
 		function colorFilter(imgData, pixelNum, colorObj, range){
 			// will return true or false based on wheter a the pixel color is within the specified range
 			// an actual solution will involve color calculation in a color cube.   
 			// console.log(colorObj);
-			range = range || 1;
-			var red = 150;
-			var green = 150;
-			var blue =  110;
-			if (colorObj){
-				red = colorObj.r;
-				green = colorObj.g;
-				blue = colorObj.b;
-			}
+			range = range || 10;
 
+			// function colorRange(centerColor, compColor, range){...}
 
 			if (
-				imgData.data[pixelNum]> red && 
-				imgData.data[pixelNum+1]> blue && 
-				// imgData.data[i+1]<220 &&
-				imgData.data[pixelNum+2]< green
-				)
+				colorRange(
+					colorObj,
+					{
+						r : imgData.data[pixelNum],
+						g : imgData.data[pixelNum+1],
+						b : imgData.data[pixelNum+2]
+					}, 
+					range))
 			{
 				return true;
 			} else {
 				return false;
 			}
-
 		};
+
 		function bloomSearch (startIndex, canvasWidth){
 			//bloomSearch will search surrounding areas for further indication of desired image.
-
 		};
 		function vectorDetection (){};
 		function mirrorDetection (){};
+
 		function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 			radius = radius || 1;
 			//Idea - check surrounding radius of pixels to determine if checked pixel is noise or valid object
@@ -252,13 +266,10 @@
 
 			// check surrounding pixels - do not search within search radius of edge 
 			//check vs method - 
-
-
 		};
+
 		function blobMeanLines (startX, startY, context, canvasWidth){
-
 			//create 2 lines extending on x axis and y axis.  take the longest between the two and place a dot in the middle of the longest line. extend 
-
 		};
 
 		function pxTranslate (inputX, inputY, canvasWidth, picData){
