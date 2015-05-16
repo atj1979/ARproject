@@ -15,11 +15,12 @@
 		-->
 		<video id="video" width="640" height="480" autoplay></video>
 		<button id="snap">Snap Photo</button>
-		<div id="resultColor">
+		<!--<div id="resultColor"> 
 			<div>RED<input id="red" type="number"  /></div>
 			<div>GREEN<input id="green" type="number" /></div>
 			<div>BLUE<input id="blue" type="number" /></div>
-		</div>
+		</div> -->
+		<input id="aim" type="radio">AIM</body>input><button id="profile">Get Color Profile</button>
 		<form id="color">
 			<input id="background-color" 
 				type="color" 
@@ -114,7 +115,25 @@
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	    	processImage(context, data, null, canvas.width, img, colorObj);
 	    // console.log("takePicture worked!!!!")
-	  }
+	  };
+
+	  // function takeProfile(){
+	  // 	var context = canvas.getContext('2d');
+	  // 	var data = context.getImageData(0,0, canvas.width, canvas.height);
+	  // 	//calculate input box of 20 by 20 centered top bottom left right
+
+	  // 	context.drawImage(video, canvas.width-10, canvas.height-10, 20, 20);
+	  // };
+
+	  // document.getElementById("profile").addEventListener('click', function (){
+	  // 	//
+	  // 	takeProfile()
+	  // });
+
+		// function drawAim (){};
+
+		// Add listener to radio aim button to get a color profile.
+	  // document.getElementById("aim").addEventListener('',function (){});
 
 		document.getElementById("snap").addEventListener('click', function (){
 			var colorObj=hexToRGB(document.getElementById("background-color").value)
@@ -125,6 +144,10 @@
 			// console.log('PID of SetInterval = ',);
 			// setInterval(takePicture, 30)
 		});
+		// getColorProfile will take a 20px by 20px box that will get a color profile of the image inside that box
+		function getColorProfile(context, imgData, canvasWidth, colorObj){
+
+		}
 
 		function processImage (context, imgData, searchSignature, canvasWidth, overlay, colorObj){
 			var start = new Date;
@@ -146,6 +169,20 @@
 				x:0,
 				y:0,
 				counter:0
+			};
+			var colorData ={
+				min:{
+					product:0,
+					r:0,
+					g:0,
+					b:0
+				},
+				max:{
+					product:0,
+					r:0,
+					g:0,
+					b:0
+				}
 			};
 
 			//guessed mcdonalds colors >150, >150, <120 RGB
@@ -196,7 +233,7 @@
 			//distance = sqrt((r1-r2)^2+(g1-g2)^2+(b1-b2)^2)
 			//the formula will be changed such that distance/range will be squared to prevent using Math.sqrt() because it is an expensive operation. Also Math.pow() will not be used because it is also slightly more expensive, because the function call is slightly more expensive. 
 			// console.log(compColor);
-
+			
 			if (
 				range * range  >= 
 					(centerColor.r - compColor.r) * (centerColor.r - compColor.r) +
@@ -214,10 +251,9 @@
 			// will return true or false based on wheter a the pixel color is within the specified range
 			// an actual solution will involve color calculation in a color cube.   
 			// console.log(colorObj);
-			range = range || 10;
+			range = range || 1000;
 
 			// function colorRange(centerColor, compColor, range){...}
-
 			if (
 				colorRange(
 					colorObj,
