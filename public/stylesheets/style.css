@@ -23,3 +23,25 @@ video {
 	width:20px;
 	height:20px;
 }
+
+/*From http://bl.ocks.org/mbostock/3886208*/
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bar {
+  fill: steelblue;
+}
+
+.x.axis path {
+  display: none;
+}
+/* End from bl.ocks.org/mbostock/3886208*/
