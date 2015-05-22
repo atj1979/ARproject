@@ -21,7 +21,9 @@
 			<div>GREEN<input id="green" type="number" /></div>
 			<div>BLUE<input id="blue" type="number" /></div>
 		</div> -->
-		<input id="aim" type="radio">AIM</body>input><button id="profile">Get Color Profile</button>
+		<input id="range" type="number" value="100"></input>
+		<input id="aim" type="checkbox">AIM </input>
+		<button id="profile">Get Color Profile</button>
 		<form id="color">
 			<input id="background-color" 
 				type="color" 
@@ -103,16 +105,17 @@
 
 		// Located from MDN WebRTC_API Taking Still Photos
 		function takePicture (colorObj) {
+			// colorObj ? colorObj : {r:255, g:255, b:255};
 	    var context = canvas.getContext('2d');
 	   	var img = document.getElementById('source');
 	      //I think we have to draw the image in order to get the data from it.
 	      context.drawImage(video, 0, 0);
 
-	      //get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
+	      // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
 	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
 	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
-
-	    	//clear the canvas after we have our data
+	    	console.log(colorObj);
+	    	// clear the canvas after we have our data
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	    	processImage(context, data, null, canvas.width, img, colorObj);
 	  };
@@ -141,8 +144,9 @@
 			// document.getElementById('green').value=colorObj.g;
 			// document.getElementById('blue').value=colorObj.b;
 			takePicture(colorObj);
-			// console.log('PID of SetInterval = ',);
-			// setInterval(takePicture, 30)
+			var runTime = takePicture.bind(null, colorObj);
+			var PID = setInterval(runTime, 100);
+			 console.log(PID);
 		});
 		// getColorProfile will take a 20px by 20px box that will get a color profile of the image inside that box
 		function getColorProfile(context, imgData, canvasWidth, colorObj){
@@ -188,9 +192,9 @@
 				}
 			};
 
-			//guessed mcdonalds colors >150, >150, <120 RGB
+			// guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
-			//context.fillStyle = "yellow";
+			// context.fillStyle = "yellow";
 			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
@@ -254,7 +258,7 @@
 			// will return true or false based on wheter a the pixel color is within the specified range
 			// an actual solution will involve color calculation in a color cube.   
 			// console.log(colorObj);
-			range = range || 1000;
+			range = range || 100;
 
 			// function colorRange(centerColor, compColor, range){...}
 			if (
@@ -290,12 +294,12 @@
 			//get current x and y
 			var count = 0;
 			//filter down because I'm tired.
-			for (var i = 0; i < 4; i++){
+			for (var i = 0; i < radius; i++){
 				if (colorFilter(imgData, pixelNum+i, colorObj)){
 					count++;
 				}
 			}
-			if (count>=3){
+			if (count>=Math.floor(radius*.75)){
 				return true;
 			} else {
 				return false;
@@ -323,9 +327,11 @@
 				var quad = [];
 			  quad[0].push(data[i]);
 			  quad[1].push(data[i + 1]);
-			  quad[2].push(data[i + 2];
+			  quad[2].push(data[i + 2]);
 			  //quad[3].push(data[i + 3]);
+			  result.push(quad);
 			}
+			return result;
 		}
 
 		function xyTranslate (inputIndex, canvasWidth, picData){
@@ -355,100 +361,100 @@
 		}
 
 
-//From http://bl.ocks.org/mbostock/3886208
+// //From http://bl.ocks.org/mbostock/3886208
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+// var margin = {top: 20, right: 20, bottom: 30, left: 40},
+//     width = 960 - margin.left - margin.right,
+//     height = 500 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
+// var x = d3.scale.ordinal()
+//     .rangeRoundBands([0, width], .1);
 
-var y = d3.scale.linear()
-    .rangeRound([height, 0]);
+// var y = d3.scale.linear()
+//     .rangeRound([height, 0]);
 
-var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+// var color = d3.scale.ordinal()
+//     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+// var xAxis = d3.svg.axis()
+//     .scale(x)
+//     .orient("bottom");
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(d3.format(".2s"));
+// var yAxis = d3.svg.axis()
+//     .scale(y)
+//     .orient("left")
+//     .tickFormat(d3.format(".2s"));
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+// var svg = d3.select("body").append("svg")
+//     .attr("width", width + margin.left + margin.right)
+//     .attr("height", height + margin.top + margin.bottom)
+//   .append("g")
+//     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("data.csv", function(error, data) {
-  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
+// d3.csv("data.csv", function(error, data) {
+//   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
 
-  data.forEach(function(d) {
-    var y0 = 0;
-    d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
-    d.total = d.ages[d.ages.length - 1].y1;
-  });
+//   data.forEach(function(d) {
+//     var y0 = 0;
+//     d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+//     d.total = d.ages[d.ages.length - 1].y1;
+//   });
 
-  data.sort(function(a, b) { return b.total - a.total; });
+//   data.sort(function(a, b) { return b.total - a.total; });
 
-  x.domain(data.map(function(d) { return d.State; }));
-  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+//   x.domain(data.map(function(d) { return d.State; }));
+//   y.domain([0, d3.max(data, function(d) { return d.total; })]);
 
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+//   svg.append("g")
+//       .attr("class", "x axis")
+//       .attr("transform", "translate(0," + height + ")")
+//       .call(xAxis);
 
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Population");
+//   svg.append("g")
+//       .attr("class", "y axis")
+//       .call(yAxis)
+//     .append("text")
+//       .attr("transform", "rotate(-90)")
+//       .attr("y", 6)
+//       .attr("dy", ".71em")
+//       .style("text-anchor", "end")
+//       .text("Population");
 
-  var state = svg.selectAll(".state")
-      .data(data)
-    .enter().append("g")
-      .attr("class", "g")
-      .attr("transform", function(d) { return "translate(" + x(d.State) + ",0)"; });
+//   var state = svg.selectAll(".state")
+//       .data(data)
+//     .enter().append("g")
+//       .attr("class", "g")
+//       .attr("transform", function(d) { return "translate(" + x(d.State) + ",0)"; });
 
-  state.selectAll("rect")
-      .data(function(d) { return d.ages; })
-    .enter().append("rect")
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.y1); })
-      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-      .style("fill", function(d) { return color(d.name); });
+//   state.selectAll("rect")
+//       .data(function(d) { return d.ages; })
+//     .enter().append("rect")
+//       .attr("width", x.rangeBand())
+//       .attr("y", function(d) { return y(d.y1); })
+//       .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+//       .style("fill", function(d) { return color(d.name); });
 
-  var legend = svg.selectAll(".legend")
-      .data(color.domain().slice().reverse())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+//   var legend = svg.selectAll(".legend")
+//       .data(color.domain().slice().reverse())
+//     .enter().append("g")
+//       .attr("class", "legend")
+//       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-  legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
+//   legend.append("rect")
+//       .attr("x", width - 18)
+//       .attr("width", 18)
+//       .attr("height", 18)
+//       .style("fill", color);
 
-  legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d; });
+//   legend.append("text")
+//       .attr("x", width - 24)
+//       .attr("y", 9)
+//       .attr("dy", ".35em")
+//       .style("text-anchor", "end")
+//       .text(function(d) { return d; });
 
-});
-//End from http://bl.ocks.org/mbostock/3886208
+// });
+// //End from http://bl.ocks.org/mbostock/3886208
 
 	</script>
 </html>
