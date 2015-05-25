@@ -4,6 +4,8 @@
 
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	<script src="./javascripts/filters.js"></script>
+	<script src="./javascripts/graphTools.js"></script>
 	</head>
 	<body>
 		<h1>AR Project</h1>
@@ -145,13 +147,15 @@
 			// document.getElementById('blue').value=colorObj.b;
 			takePicture(colorObj);
 			var runTime = takePicture.bind(null, colorObj);
-			var PID = setInterval(runTime, 100);
-			console.log(PID);
-			//clear previous intervals.  Future- should be exported to be canceled with a button.
-			if (PID > 1){
-				clearInterval(PID-1);
-			};
+			// var PID = setInterval(runTime, 100);
+			// //clear previous intervals.  Future- should be exported to be canceled with a button.
+			// if (PID > 1){
+			// 	clearInterval(PID-1);
+			// };
 		});
+
+
+		
 		// getColorProfile will take a 20px by 20px box that will get a color profile of the image inside that box
 		function getColorProfile(context, imgData, canvasWidth, colorObj){
 
@@ -202,8 +206,9 @@
 			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
-					colorFilter(imgData, i, colorObj)
-					&& noiseReduce(imgData, i, canvasWidth, colorObj)
+					// colorFilter(imgData, i, colorObj)
+					// && 
+					noiseReduce(imgData, i, canvasWidth, colorObj)
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
@@ -257,29 +262,7 @@
 				return false;
 			}
 		};
-
-		function colorFilter(imgData, pixelNum, colorObj, range){
-			// will return true or false based on wheter a the pixel color is within the specified range
-			// an actual solution will involve color calculation in a color cube.   
-			// console.log(colorObj);
-			range = range || 100;
-
-			// function colorRange(centerColor, compColor, range){...}
-			if (
-				colorRange(
-					colorObj,
-					{
-						r : imgData.data[pixelNum],
-						g : imgData.data[pixelNum+1],
-						b : imgData.data[pixelNum+2]
-					}, 
-					range))
-			{
-				return true;
-			} else {
-				return false;
-			}
-		};
+		function colorGradient(){};
 
 		function bloomSearch (startIndex, canvasWidth){
 			//bloomSearch will search surrounding areas for further indication of desired image.
@@ -287,33 +270,7 @@
 		function vectorDetection (){};
 		function mirrorDetection (){};
 
-		function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
-			radius = radius || 1;
-			//Idea - check surrounding radius of pixels to determine if checked pixel is noise or valid object
-			//one method is to average the surrounding 8 pixels
-			//another method is to count the number of pixels in that 3x3 within the color range.
-			//return a true if pixel is valid
-			// radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
-
-			//get current x and y
-			var count = 0;
-			//filter down because I'm tired.
-			for (var i = 0; i < radius; i++){
-				if (colorFilter(imgData, pixelNum+i, colorObj)){
-					count++;
-				}
-			}
-			if (count>=Math.floor(radius*.75)){
-				return true;
-			} else {
-				return false;
-			}
-			//get list of 8 indicies of pixels to check. Simple - do clockwise
-
-
-			// check surrounding pixels - do not search within search radius of edge 
-			//check vs method - 
-		};
+		
 
 		function blobMeanLines (startX, startY, context, canvasWidth){
 			//create 2 lines extending on x axis and y axis.  take the longest between the two and place a dot in the middle of the longest line. extend 
@@ -324,19 +281,7 @@
 			return inputY*canvasWidth+inputX-1;
 		};
 
-		function imgDataToQuad(imgData, canvasWidth){
-			//function will take image data and make nested array quad with rgba values for each one of the quads.  [[R, G, B, A],[R, G, B, A],...] i.e. [[255,255,10,255],...]
-			var result = [];
-			for(i = 0; i < len; i += 4) {
-				var quad = [];
-			  quad[0].push(data[i]);
-			  quad[1].push(data[i + 1]);
-			  quad[2].push(data[i + 2]);
-			  //quad[3].push(data[i + 3]);
-			  result.push(quad);
-			}
-			return result;
-		}
+
 
 		function xyTranslate (inputIndex, canvasWidth, picData){
 			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
