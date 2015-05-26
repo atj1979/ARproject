@@ -49,7 +49,6 @@
 		d3.select('html').style('height','100%').style('width','100%');
     d3.select('body').style('height','100%').style('width','100%');
     d3.select('#divPlot').style('width', "500px").style('height', "500px");
-    scatterPlot3d( d3.select('#divPlot'));
 
 	/* Image process idea.  
 		per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
@@ -127,6 +126,7 @@
 	    	// clear the canvas after we have our data
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	    	processImage(context, data, null, canvas.width, img, colorObj);
+
 	  };
 
 	  // function takeProfile(){
@@ -211,7 +211,9 @@
 			// guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
 			// context.fillStyle = "yellow";
-			stackedBar(imgDataToQuad(imgData, canvasWidth));
+	    scatterPlot3d( d3.select('#divPlot'), imgData);
+
+			// stackedBar(imgDataToQuad(imgData, canvasWidth));
 			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (

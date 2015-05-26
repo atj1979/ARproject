@@ -5,7 +5,7 @@
 
 function imgDataToQuad(imgData, canvasWidth){
 	//function will take image data and make nested array quad with rgba values for each one of the quads.  [[R, G, B, A],[R, G, B, A],...] i.e. [[255,255,10,255],...]
-	
+	console.log(imgData);
 	var result = [];
 	for(i = 0; i < imgData.data.length; i +=4) {
 		// var quad = new Array(4);
@@ -82,6 +82,11 @@ function sortPxData(pixelData){
 
 
 function scatterPlot3d( parent, imgData ) {
+  
+	// console.log(imgData);
+	// initializeDataGrid(imgData);
+  var rows = initializeDataGrid(imgData);
+
   var x3d = parent  
     .append("x3d")
       .style( "width", parseInt(parent.style("width"))+"px" )
@@ -96,14 +101,15 @@ function scatterPlot3d( parent, imgData ) {
      .attr( "orientation", [-0.5, 1, 0.2, 1.12*Math.PI/4])
      .attr( "position", [8, 4, 15])
 
-  var rows = initializeDataGrid();
   var axisRange = [0, 10];
   var scales = [];
   var initialDuration = 0;
   var defaultDuration = 800;
   var ease = 'linear';
   var time = 0;
-  var axisKeys = ["Red", "Green", "Blue"]
+  var axisKeys = ["Red", "Green", "Blue"];
+  initializePlot();
+
 
   // Helper functions for initializeAxis() and drawAxis()
   function axisName( name, axisIndex ) {
@@ -131,8 +137,7 @@ function scatterPlot3d( parent, imgData ) {
     initializeAxis(2);
   }
 
-  function initializeAxis( axisIndex )
-  {
+  function initializeAxis( axisIndex ) {
     var key = axisKeys[axisIndex];
     drawAxis( axisIndex, key, initialDuration );
 
@@ -203,9 +208,9 @@ function scatterPlot3d( parent, imgData ) {
       .append("box")
       .attr("size", tickSize + " " + tickSize + " " + tickSize);
     // enter + update
-    ticks.transition().duration(duration)
-      .attr("translation", function(tick) { 
-         return constVecWithAxisValue( 0, scale(tick), axisIndex ); })
+    // ticks.transition().duration(duration)
+    //   .attr("translation", function(tick) { 
+    //      return constVecWithAxisValue( 0, scale(tick), axisIndex ); })
     ticks.exit().remove();
 
     // tick labels
@@ -245,14 +250,14 @@ function scatterPlot3d( parent, imgData ) {
         .attr("emissiveColor", "gray")
       newGridLines.append("polyline2d");
 
-      gridLines.selectAll("shape polyline2d").transition().duration(duration)
-        .attr("lineSegments", "0 0, " + axisRange[1] + " 0")
+      // gridLines.selectAll("shape polyline2d").transition().duration(duration)
+      //   .attr("lineSegments", "0 0, " + axisRange[1] + " 0")
 
-      gridLines.transition().duration(duration)
-         .attr("translation", axisIndex==0
-            ? function(d) { return scale(d) + " 0 0"; }
-            : function(d) { return "0 0 " + scale(d); }
-          )
+      // gridLines.transition().duration(duration)
+      //    .attr("translation", axisIndex==0
+      //       ? function(d) { return scale(d) + " 0 0"; }
+      //       : function(d) { return "0 0 " + scale(d); }
+      //     )
     }  
   }
 
@@ -263,7 +268,7 @@ function scatterPlot3d( parent, imgData ) {
      console.log("no rows to plot.")
      return;
     }
-
+    console.log("plotData called");
     var x = scales[0], y = scales[1], z = scales[2];
     var sphereRadius = 0.2;
 
@@ -342,8 +347,8 @@ function scatterPlot3d( parent, imgData ) {
     }
   }
 
-  initializeDataGrid(imgData);
-  initializePlot();
+  plotData();`
+  
   // setInterval( updateData, defaultDuration );
 };
 
