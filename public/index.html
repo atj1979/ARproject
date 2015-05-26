@@ -36,6 +36,8 @@
 		<div style="display:none;">
 		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
 		</div>
+		<div id="graph"></div>
+		<svg class="chart"></svg>
 
 
 	</body>
@@ -116,7 +118,6 @@
 	      // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
 	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
 	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
-	    	console.log(colorObj);
 	    	// clear the canvas after we have our data
 	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	    	processImage(context, data, null, canvas.width, img, colorObj);
@@ -146,7 +147,8 @@
 			// document.getElementById('green').value=colorObj.g;
 			// document.getElementById('blue').value=colorObj.b;
 			takePicture(colorObj);
-			var runTime = takePicture.bind(null, colorObj);
+
+			// var runTime = takePicture.bind(null, colorObj);
 			// var PID = setInterval(runTime, 100);
 			// //clear previous intervals.  Future- should be exported to be canceled with a button.
 			// if (PID > 1){
@@ -155,7 +157,7 @@
 		});
 
 
-		
+
 		// getColorProfile will take a 20px by 20px box that will get a color profile of the image inside that box
 		function getColorProfile(context, imgData, canvasWidth, colorObj){
 
@@ -203,12 +205,12 @@
 			// guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
 			// context.fillStyle = "yellow";
+			stackedBar(imgDataToQuad(imgData, canvasWidth));
 			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
-					// colorFilter(imgData, i, colorObj)
-					// && 
-					noiseReduce(imgData, i, canvasWidth, colorObj)
+					colorFilter(imgData, i, colorObj)
+					&& noiseReduce(imgData, i, canvasWidth, colorObj)
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
@@ -245,23 +247,7 @@
 			return colorObj;
 		};
 
-		function colorRange(centerColor, compColor, range){
-			//distance = sqrt((r1-r2)^2+(g1-g2)^2+(b1-b2)^2)
-			//the formula will be changed such that distance/range will be squared to prevent using Math.sqrt() because it is an expensive operation. Also Math.pow() will not be used because it is also slightly more expensive, because the function call is slightly more expensive. 
-			// console.log(compColor);
-			
-			if (
-				range * range  >= 
-					(centerColor.r - compColor.r) * (centerColor.r - compColor.r) +
-					(centerColor.g - compColor.g) * (centerColor.g - compColor.g) +
-					(centerColor.b - compColor.b) * (centerColor.b - compColor.b)
-			){
-				// console.log(range*range);
-				return true;
-			} else {
-				return false;
-			}
-		};
+		
 		function colorGradient(){};
 
 		function bloomSearch (startIndex, canvasWidth){
