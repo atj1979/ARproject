@@ -37,13 +37,6 @@ body {
   shape-rendering: crispEdges;
 }
 
-.bar {
-  fill: steelblue;
-}
-
-.chart rect {
-  fill: steelblue;
-}
 
 .chart text {
   fill: white;
