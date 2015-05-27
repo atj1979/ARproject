@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-
-	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<!-- <link rel="stylesheet" type="text/css" href="stylesheets/style.css"> -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 	<script type="text/javascript" src="http://x3dom.org/x3dom/dist/x3dom-full.js"></script>
 	<link rel="stylesheet" type="text/css" href="http://www.x3dom.org/download/dev/x3dom.css"/>
@@ -35,20 +36,16 @@
 				onchange="">
 		</form>
 		<canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
-		<div style="display:none;">
+		<!-- <div style="display:none;">
 		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
-		</div>
+		</div> -->
 		<div id="divPlot"></div>
-		<div id="graph"></div>
-		<svg class="chart"></svg>
 
 
 	</body>
 	<script>
 
-		d3.select('html').style('height','100%').style('width','100%');
-    d3.select('body').style('height','100%').style('width','100%');
-    d3.select('#divPlot').style('width', "500px").style('height', "500px");
+		
 
 	/* Image process idea.  
 		per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
@@ -211,10 +208,11 @@
 			// guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
 			// context.fillStyle = "yellow";
+			d3.select('html').style('height','100%').style('width','100%');
+	    d3.select('body').style('height','100%').style('width','100%');
+	    d3.select('#divPlot').style('width', "500px").style('height', "500px");
 	    scatterPlot3d( d3.select('#divPlot'), imgData);
 
-			// stackedBar(imgDataToQuad(imgData, canvasWidth));
-			
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
 					colorFilter(imgData, i, colorObj)
@@ -302,6 +300,7 @@
 			}
 			return result;
 		}
+		
 
 
 
