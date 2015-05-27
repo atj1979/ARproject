@@ -1,3 +1,15 @@
+function hexToRGB (hexVal){
+	function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+	function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+	function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+	function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+	var colorObj ={};
+	colorObj.r = hexToR(hexVal);
+	colorObj.g = hexToG(hexVal);
+	colorObj.b = hexToB(hexVal);
+	return colorObj;
+};
+
 function colorFilter(imgData, pixelNum, colorObj, range){
 	// will return true or false based on wheter a the pixel color is within the specified range
 	// an actual solution will involve color calculation in a color cube.   
@@ -60,5 +72,30 @@ function colorRange(centerColor, compColor, range){
 	}
 };
 
+function xyTranslate (inputIndex, canvasWidth, picData){
+	//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
+	result = {};
+
+	// keep referneces to calc number so there aren't multiple calculations for the same stuff.
+	var numAll = inputIndex / (canvasWidth * 4);
+	var yCalc = Math.floor(numAll);
+	var numX = ((numAll - yCalc) * (canvasWidth * 4 ));
+	var xCalc = Math.floor( numX / 4 );
+	
+	//get y - divide by canvas.width to get row
+	result.y = yCalc;
+	//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
+	result.x = xCalc;
+
+	if (picData){
+	// get start index the do the count up from there.
+	var startInd = Math.floor( inputIndex / 4 ) * 4; 
+		result.r = picData[startInd];
+		result.g = picData[startInd + 1];
+		result.b = picData[startInd + 2];
+		result.a = picData[startInd + 3];
+	}
+	return result;
+};
 
 

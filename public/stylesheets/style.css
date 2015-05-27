@@ -24,27 +24,11 @@ video {
 	height:20px;
 }
 
-/*From http://bl.ocks.org/mbostock/3886208*/
 
-body {
-  font: 10px sans-serif;
+
+#container {
+  height: 800px; 
+  min-width: 310px; 
+  max-width: 800px;
+  margin: 0 auto;
 }
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-
-.chart text {
-  fill: white;
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
-
-.x.axis path {
-  display: none;
-}
-/* End from bl.ocks.org/mbostock/3886208*/

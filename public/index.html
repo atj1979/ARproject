@@ -3,12 +3,14 @@
 	<head>
 	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<!-- <link rel="stylesheet" type="text/css" href="stylesheets/style.css"> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-	<script type="text/javascript" src="http://x3dom.org/x3dom/dist/x3dom-full.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://www.x3dom.org/download/dev/x3dom.css"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-3d.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
 	<script src="./javascripts/filters.js"></script>
 	<script src="./javascripts/graphTools.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
 	</head>
 	<body>
 		<h1>AR Project</h1>
@@ -21,6 +23,7 @@
 		-->
 		<video id="video" width="640" height="480" autoplay></video>
 		<button id="snap">Snap Photo</button>
+		<button id="profile">Take Profile</button>
 		<!--<div id="resultColor"> 
 			<div>RED<input id="red" type="number"  /></div>
 			<div>GREEN<input id="green" type="number" /></div>
@@ -39,7 +42,7 @@
 		<!-- <div style="display:none;">
 		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
 		</div> -->
-		<div id="divPlot"></div>
+		<div id="container" style="height: 400px"></div>
 
 
 	</body>
@@ -126,37 +129,29 @@
 
 	  };
 
-	  // function takeProfile(){
-	  // 	var context = canvas.getContext('2d');
-	  // 	var data = context.getImageData(0,0, canvas.width, canvas.height);
-	  // 	//calculate input box of 20 by 20 centered top bottom left right
-
-	  // 	context.drawImage(video, canvas.width-10, canvas.height-10, 20, 20);
-	  // };
-
-	  // document.getElementById("profile").addEventListener('click', function (){
-	  // 	//
-	  // 	takeProfile()
-	  // });
-
-		// function drawAim (){};
-
-		// Add listener to radio aim button to get a color profile.
-	  // document.getElementById("aim").addEventListener('',function (){});
-
 		document.getElementById("snap").addEventListener('click', function (){
+			//Get the color from the color picker
 			var colorObj=hexToRGB(document.getElementById("background-color").value)
-			// document.getElementById('red').value=colorObj.r;
-			// document.getElementById('green').value=colorObj.g;
-			// document.getElementById('blue').value=colorObj.b;
+			
 			takePicture(colorObj);
 
-			// var runTime = takePicture.bind(null, colorObj);
-			// var PID = setInterval(runTime, 100);
-			// //clear previous intervals.  Future- should be exported to be canceled with a button.
-			// if (PID > 1){
-			// 	clearInterval(PID-1);
-			// };
+			var runTime = takePicture.bind(null, colorObj);
+			var PID = setInterval(runTime, 100);
+			//clear previous intervals.  Future- should be exported to be canceled with a button.
+			if (PID > 1){
+				clearInterval(PID-1);
+			};
+		});
+
+		document.getElementById("profile").addEventListener('click', function(){
+			// Takes a profile  and plots to the 3d scatterPlot
+			var context = canvas.getContext('2d');
+			context.drawImage(video, 0, 0);
+
+			var imgData = context.getImageData(0,0, canvas.width, canvas.height);
+			context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+			scatterPlot(imgData);
+
 		});
 
 
@@ -190,28 +185,12 @@
 				y:0,
 				counter:0
 			};
-			var colorData ={
-				min:{
-					product:0,
-					r:0,
-					g:0,
-					b:0
-				},
-				max:{
-					product:0,
-					r:0,
-					g:0,
-					b:0
-				}
-			};
+		
 
 			// guessed mcdonalds colors >150, >150, <120 RGB
 			// better color identification could be identified by 3 phase - vector analysis
 			// context.fillStyle = "yellow";
-			d3.select('html').style('height','100%').style('width','100%');
-	    d3.select('body').style('height','100%').style('width','100%');
-	    d3.select('#divPlot').style('width', "500px").style('height', "500px");
-	    scatterPlot3d( d3.select('#divPlot'), imgData);
+			
 
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
@@ -241,32 +220,17 @@
 			//colorObj will contain min and max values for each RGB. 
 		};
 
-		function hexToRGB (hexVal){
-			function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-			function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-			function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-			function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
-			var colorObj ={};
-			colorObj.r = hexToR(hexVal);
-			colorObj.g = hexToG(hexVal);
-			colorObj.b = hexToB(hexVal);
-			return colorObj;
-		};
 
 		
-		function colorGradient(){};
+		function colorGradient(){
+			//  Function will check if it is within a straight line distance of current pixel 
+		};
 
 		function bloomSearch (startIndex, canvasWidth){
 			//bloomSearch will search surrounding areas for further indication of desired image.
 		};
 		function vectorDetection (){};
 		function mirrorDetection (){};
-
-		
-
-		function blobMeanLines (startX, startY, context, canvasWidth){
-			//create 2 lines extending on x axis and y axis.  take the longest between the two and place a dot in the middle of the longest line. extend 
-		};
 
 		function pxTranslate (inputX, inputY, canvasWidth, picData){
 			//function will take an x and y input for a position in canvas and respond with the pixel index starting at R.
@@ -275,32 +239,8 @@
 
 
 
-		function xyTranslate (inputIndex, canvasWidth, picData){
-			//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
-			result = {};
 
-			// keep referneces to calc number so there aren't multiple calculations for the same stuff.
-			var numAll = inputIndex / (canvasWidth * 4);
-			var yCalc = Math.floor(numAll);
-			var numX = ((numAll - yCalc) * (canvasWidth * 4 ));
-			var xCalc = Math.floor( numX / 4 );
-			
-			//get y - divide by canvas.width to get row
-			result.y = yCalc;
-			//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
-			result.x = xCalc;
 
-			if (picData){
-			// get start index the do the count up from there.
-			var startInd = Math.floor( inputIndex / 4 ) * 4; 
-				result.r = picData[startInd];
-				result.g = picData[startInd + 1];
-				result.b = picData[startInd + 2];
-				result.a = picData[startInd + 3];
-			}
-			return result;
-		}
-		
 
 
 
