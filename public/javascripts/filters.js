@@ -1,8 +1,11 @@
+
+function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)};
+function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)};
+function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)};
+function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h};
+
 function hexToRGB (hexVal){
-	function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
-	function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
-	function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
-	function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+	
 	var colorObj ={};
 	colorObj.r = hexToR(hexVal);
 	colorObj.g = hexToG(hexVal);
@@ -31,6 +34,22 @@ function colorFilter(imgData, pixelNum, colorObj, range){
 		return false;
 	}
 };
+
+function colorGradient(imgData, pixelNum, colorObj, range){
+	//imgData and pixelNum will make up the current pixel, colorObj will make up any comparison pixel.
+
+	//  Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
+	return colorFilter(imgData, pixelNum, colorObj, range);
+};
+function nearbyPx (pixelNum, resolution, width){
+	// calculate the surrounding pixels based on pixel number 
+	// two points based on resolution
+	// left (if pixelNum % width) * width is greater than resolution)
+	// top pixelNum / width > resolution
+	// bottom pixelNum  / width < height 
+	
+
+}
 
 function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	radius = radius || 1;

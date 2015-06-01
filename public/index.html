@@ -21,7 +21,8 @@
 		client supports video/camera, but for the sake of illustrating the 
 		elements involved, they are created with markup (not JavaScript)
 		-->
-		<video id="video" width="640" height="480" autoplay></video>
+		<!-- <video id="video" width="640" height="480" autoplay></video> -->
+		<input type="file" capture="camera" accept="image/*" id="video" name="cameraInput">
 		<button id="snap">Snap Photo</button>
 		<button id="profile">Take Profile</button>
 		<!--<div id="resultColor"> 
@@ -117,15 +118,15 @@
 			// colorObj ? colorObj : {r:255, g:255, b:255};
 	    var context = canvas.getContext('2d');
 	   	var img = document.getElementById('source');
-	      //I think we have to draw the image in order to get the data from it.
-	      context.drawImage(video, 0, 0);
+      //I think we have to draw the image in order to get the data from it.
+      context.drawImage(video, 0, 0);
 
-	      // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
-	      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
-	    	var data = context.getImageData(0,0, canvas.width, canvas.height);
-	    	// clear the canvas after we have our data
-	    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-	    	processImage(context, data, null, canvas.width, img, colorObj);
+      // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
+      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
+    	var data = context.getImageData(0,0, canvas.width, canvas.height);
+    	// clear the canvas after we have our data
+    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+    	processImage(context, data, null, canvas.width, img, colorObj);
 
 	  };
 
@@ -178,7 +179,7 @@
 			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
 			//Basic Search - search every pixel.
 			//make new array to store results
-			var resolution = 8;
+			var resolution = 8; //must be divisible by 4 because of RGBA convention
 			var pos;
 			var average = {
 				x:0,
@@ -196,6 +197,7 @@
 				if (
 					colorFilter(imgData, i, colorObj)
 					&& noiseReduce(imgData, i, canvasWidth, colorObj)
+					&& colorGradient(imgData, i, colorObj, 50)
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
@@ -222,12 +224,21 @@
 
 
 		
-		function colorGradient(){
-			//  Function will check if it is within a straight line distance of current pixel 
-		};
+		
 
-		function bloomSearch (startIndex, canvasWidth){
-			//bloomSearch will search surrounding areas for further indication of desired image.
+		function bloomSearch (imgData, startIndex, canvasWidth){
+			//bloom search will search each pixel , compare it to surrounding pixels and decide if that pixel is part of an object.
+
+			//create an empyy array that matches the image# of pixels, not the # of RGBA quintuplets
+			
+			//Method 1:  Bloom search, sense an object if it has pixels around it and search the surrounding pixels - will be recursive
+
+			//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
+
+
+
+
+			//update image array with number correlating to the object that it is part of 
 		};
 		function vectorDetection (){};
 		function mirrorDetection (){};
