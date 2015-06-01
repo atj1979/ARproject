@@ -41,12 +41,19 @@ function colorGradient(imgData, pixelNum, colorObj, range){
 	//  Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
 	return colorFilter(imgData, pixelNum, colorObj, range);
 };
-function nearbyPx (pixelNum, resolution, width){
+function nearbyPx (imgData, pixelNum, resolution, width){
+	// Will return an array of surrounding pixels.
+	//skip pixels on edge edges.
+	var maxRows = imgData / (4* width); 
+	var surrPxIndex = [];
+
+
 	// calculate the surrounding pixels based on pixel number 
-	// two points based on resolution
 	// left (if pixelNum % width) * width is greater than resolution)
 	// top pixelNum / width > resolution
 	// bottom pixelNum  / width < height 
+
+
 	
 
 }
@@ -60,19 +67,45 @@ function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	// radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
 	//get current x and y
 	var count = 0;
-	//filter down because I'm tired.
+
+	//get surrounding pixel list
+		var xy = xyTranslate(pixelNum)
+		// get current pixel x and y
+		var left = xy.x-radius;
+		var top = xy.y-radius;
+		var right = xy.x+radius;
+		var botom = xy.y+radius;
+
+		function toEdge (x, radius, canvasWidth){
+			if ()
+		}
+		// start topleft x - radius and y - radius
+
+			//if those values are > 0 it's okay to do things.
+
+		// get the pixel list line by line.  
+
+
+
 	for (var i = 0; i < radius; i++){
+
+
 		if (colorFilter(imgData, pixelNum+i, colorObj)){
 			count++;
 		}
+
+
+
 	}
+
+
+
 	return count>=Math.floor(radius*.75) ? true : false;
 
 	//get list of 8 indicies of pixels to check. Simple - do clockwise
 
 
 	// check surrounding pixels - do not search within search radius of edge 
-	//check vs method - 
 };
 
 function colorRange(centerColor, compColor, range){
@@ -116,5 +149,12 @@ function xyTranslate (inputIndex, canvasWidth, picData){
 	}
 	return result;
 };
+
+function indexFromXY (x, y, canvasWidth){
+	//  will return the index from x and y 
+	return x + y * canvasWidth - 1;
+
+
+}
 
 

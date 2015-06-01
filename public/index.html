@@ -21,8 +21,8 @@
 		client supports video/camera, but for the sake of illustrating the 
 		elements involved, they are created with markup (not JavaScript)
 		-->
-		<!-- <video id="video" width="640" height="480" autoplay></video> -->
-		<input type="file" capture="camera" accept="image/*" id="video" name="cameraInput">
+		<video id="video" width="640" height="480" autoplay></video>
+		<!-- <input type="file" capture="camera" accept="image/*" id="video" name="cameraInput"> -->
 		<button id="snap">Snap Photo</button>
 		<button id="profile">Take Profile</button>
 		<!--<div id="resultColor"> 
@@ -120,7 +120,6 @@
 	   	var img = document.getElementById('source');
       //I think we have to draw the image in order to get the data from it.
       context.drawImage(video, 0, 0);
-
       // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
       // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
     	var data = context.getImageData(0,0, canvas.width, canvas.height);
@@ -196,14 +195,14 @@
 			for (var i = 0; i < imgData.data.length; i+=resolution){
 				if (
 					colorFilter(imgData, i, colorObj)
-					&& noiseReduce(imgData, i, canvasWidth, colorObj)
+					// && noiseReduce(imgData, i, canvasWidth, colorObj)
 					&& colorGradient(imgData, i, colorObj, 50)
 				){
 					pos = xyTranslate(i, canvasWidth);
 					average.counter+=1;
 					average.x+=pos.x;
 					average.y+=pos.y;
-					context.fillRect(pos.x, pos.y, 3, 3);
+					context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
 				}
 			}
 			average.x=average.x/average.counter;
@@ -224,29 +223,53 @@
 
 
 		
+		trackedObjects = {
+
+
+			//objects will be tracked as boxes - because that is easy
+			//with a calculated center for frame to frame tracking.
+
+
+
+			// {
+			// 	id:
+			// 	leftMost:
+			// 	rightMost:
+			// 	topMost:
+			// 	bottomMost:
+			// 	calcCenter:
+			// }
+
+		};
+
+
+
 		
 
 		function bloomSearch (imgData, startIndex, canvasWidth){
 			//bloom search will search each pixel , compare it to surrounding pixels and decide if that pixel is part of an object.
 
-			//create an empyy array that matches the image# of pixels, not the # of RGBA quintuplets
-			
+			//create an empty array that matches the image # of pixels, not the # of RGBA quintuplets
+			var buffer = Uint8Array(imgData.data.length/4);
+
 			//Method 1:  Bloom search, sense an object if it has pixels around it and search the surrounding pixels - will be recursive
 
+			//bloom searh will be employed for existing objects
+
 			//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
+			
+			//linear search will find all of the objects first.
+
+
 
 
 
 
 			//update image array with number correlating to the object that it is part of 
 		};
-		function vectorDetection (){};
-		function mirrorDetection (){};
 
-		function pxTranslate (inputX, inputY, canvasWidth, picData){
-			//function will take an x and y input for a position in canvas and respond with the pixel index starting at R.
-			return inputY*canvasWidth+inputX-1;
-		};
+
+
 
 
 
