@@ -41,11 +41,38 @@ function colorGradient(imgData, pixelNum, colorObj, range){
 	//  Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
 	return colorFilter(imgData, pixelNum, colorObj, range);
 };
-function nearbyPx (imgData, pixelNum, resolution, width){
-	// Will return an array of surrounding pixels.
+function nearbyPx (imgData, pixelNum, radius, width){
+	// Will return an array of the starting indices of the surrounding pixels.
 	//skip pixels on edge edges.
-	var maxRows = imgData / (4* width); 
+	var maxRows = imgData / ( 4 * width); 
+	// get current pixel x and y
+	var xy = xyTranslate(pixelNum, width);
 	var surrPxIndex = [];
+
+
+	//is pixel near an edge ?
+	if ( xy.x - radius > 0
+		&& xy.x + radius < width 
+		&& xy.y - radius > 0
+		&& xy.y + radius < maxRows 
+		) {
+		// creating vars is expensive, create only if necessary
+		surrPxIndex.push(indexFromXY(xy.x-1, xy.y-1));
+		surrPxIndex.push(indexFromXY(xy.x, xy.y-1));
+		surrPxIndex.push(indexFromXY(xy.x+1, xy.y-1));
+		
+		surrPxIndex.push(indexFromXY(xy.x-1, xy.y));
+		surrPxIndex.push(indexFromXY(xy.x+1, xy.y));
+		
+		surrPxIndex.push(indexFromXY(xy.x-1, xy.y+1));
+		surrPxIndex.push(indexFromXY(xy.x, xy.y+1));
+		surrPxIndex.push(indexFromXY(xy.x+1, xy.y+1));
+	} 
+	if (surrPxIndex){
+		return surrPxIndex;
+	}
+
+
 
 
 	// calculate the surrounding pixels based on pixel number 
@@ -69,16 +96,8 @@ function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	var count = 0;
 
 	//get surrounding pixel list
-		var xy = xyTranslate(pixelNum)
-		// get current pixel x and y
-		var left = xy.x-radius;
-		var top = xy.y-radius;
-		var right = xy.x+radius;
-		var botom = xy.y+radius;
 
-		function toEdge (x, radius, canvasWidth){
-			if ()
-		}
+	
 		// start topleft x - radius and y - radius
 
 			//if those values are > 0 it's okay to do things.
