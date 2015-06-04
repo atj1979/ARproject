@@ -5,7 +5,6 @@ function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)};
 function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h};
 
 function hexToRGB (hexVal){
-	
 	var colorObj ={};
 	colorObj.r = hexToR(hexVal);
 	colorObj.g = hexToG(hexVal);
@@ -38,51 +37,39 @@ function colorFilter(imgData, pixelNum, colorObj, range){
 function colorGradient(imgData, pixelNum, colorObj, range){
 	//imgData and pixelNum will make up the current pixel, colorObj will make up any comparison pixel.
 
-	//  Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
+	// Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
 	return colorFilter(imgData, pixelNum, colorObj, range);
 };
-function nearbyPx (imgData, pixelNum, radius, width){
+
+function getNearbyPx (imgData, pixelNum, radius, width){
 	// Will return an array of the starting indices of the surrounding pixels.
-	//skip pixels on edge edges.
+	
 	var maxRows = imgData / ( 4 * width); 
 	// get current pixel x and y
 	var xy = xyTranslate(pixelNum, width);
 	var surrPxIndex = [];
+	var radius = radius ? radius : 1;
 
-
+	//skip pixels on edges.
 	//is pixel near an edge ?
 	if ( xy.x - radius > 0
 		&& xy.x + radius < width 
 		&& xy.y - radius > 0
 		&& xy.y + radius < maxRows 
 		) {
-		// creating vars is expensive, create only if necessary
-		surrPxIndex.push(indexFromXY(xy.x-1, xy.y-1));
-		surrPxIndex.push(indexFromXY(xy.x, xy.y-1));
-		surrPxIndex.push(indexFromXY(xy.x+1, xy.y-1));
-		
-		surrPxIndex.push(indexFromXY(xy.x-1, xy.y));
-		surrPxIndex.push(indexFromXY(xy.x+1, xy.y));
-		
-		surrPxIndex.push(indexFromXY(xy.x-1, xy.y+1));
-		surrPxIndex.push(indexFromXY(xy.x, xy.y+1));
-		surrPxIndex.push(indexFromXY(xy.x+1, xy.y+1));
-	} 
-	if (surrPxIndex){
-		return surrPxIndex;
+
+		// double loops here based on radius 
+		// this is really a box, where the radius is the shortest distance to an edge
+		for (var ry = 0; ry < 2 * radius; ry++){
+			for (var rx = 0; rx < 2 * radius; rx++){
+				if (rx !== radius && ry !== radius){
+					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry));
+				}
+			}
+		}
+
 	}
-
-
-
-
-	// calculate the surrounding pixels based on pixel number 
-	// left (if pixelNum % width) * width is greater than resolution)
-	// top pixelNum / width > resolution
-	// bottom pixelNum  / width < height 
-
-
-	
-
+	return surrPxIndex;
 }
 
 function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
@@ -91,39 +78,22 @@ function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	//one method is to average the surrounding 8 pixels
 	//another method is to count the number of pixels in that 3x3 within the color range.
 	//return a true if pixel is valid
-	// radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
+	//radius (maximum search radius in pixels) and layers (spaced equalually radius/layers) inputs could lead to changing how 
 	//get current x and y
 	var count = 0;
 
 	//get surrounding pixel list
-
-	
 		// start topleft x - radius and y - radius
-
-			//if those values are > 0 it's okay to do things.
-
+		//if those values are > 0 it's okay to do things
 		// get the pixel list line by line.  
 
-
-
 	for (var i = 0; i < radius; i++){
-
-
 		if (colorFilter(imgData, pixelNum+i, colorObj)){
 			count++;
 		}
-
-
-
 	}
-
-
-
 	return count>=Math.floor(radius*.75) ? true : false;
-
 	//get list of 8 indicies of pixels to check. Simple - do clockwise
-
-
 	// check surrounding pixels - do not search within search radius of edge 
 };
 
@@ -145,7 +115,7 @@ function colorRange(centerColor, compColor, range){
 
 function xyTranslate (inputIndex, canvasWidth, picData){
 	//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
-	result = {};
+	var result = {};
 
 	// keep referneces to calc number so there aren't multiple calculations for the same stuff.
 	var numAll = inputIndex / (canvasWidth * 4);
@@ -174,6 +144,6 @@ function indexFromXY (x, y, canvasWidth){
 	return x + y * canvasWidth - 1;
 
 
-}
+};
 
 
