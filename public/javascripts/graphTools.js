@@ -57,7 +57,7 @@ function scatterPlot(imgData) {
       		showAxes: true,
           renderTo: 'container',
           margin: 100,
-          type: 'bubble',
+          type: 'scatter',
           options3d: {
               enabled: true,
               alpha: 10,
@@ -106,17 +106,12 @@ function scatterPlot(imgData) {
           enabled: true
       },
       tooltip: {
-            formatter: function () {
-                var s = '<b>' + this.x + '</b>';
-
-                $.each(this.points, function () {
-                    s += '<br/>' + this.series.name + ': ' +
-                        this.y + 'm';
-                });
-
-                return s;
-            },
-            shared: true
+          pointFormat: '{series.name}: <b>{point.y}</b><br/>',
+          formatter: function() {
+            console.dir(this);
+            return '<b>Red : ' + this.point.x + '</b><br/><b>Green : ' + this.point.y + '</b><br/><b>Blue : ' +this.point.z+'</b>'
+          }, 
+          shared: true
       },
       series: [{
           name: 'Color',
