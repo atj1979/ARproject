@@ -57,7 +57,7 @@ function scatterPlot(imgData) {
       		showAxes: true,
           renderTo: 'container',
           margin: 100,
-          type: 'scatter',
+          type: 'bubble',
           options3d: {
               enabled: true,
               alpha: 10,
@@ -99,10 +99,24 @@ function scatterPlot(imgData) {
       zAxis: {
           min: 0,
           max: 255,
-          gridLineWidth: 1
+          gridLineWidth: 1,
+          title:"Blue"
       },
       legend: {
           enabled: true
+      },
+      tooltip: {
+            formatter: function () {
+                var s = '<b>' + this.x + '</b>';
+
+                $.each(this.points, function () {
+                    s += '<br/>' + this.series.name + ': ' +
+                        this.y + 'm';
+                });
+
+                return s;
+            },
+            shared: true
       },
       series: [{
           name: 'Color',
