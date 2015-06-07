@@ -10,16 +10,16 @@ function imgDataToQuad(imgData, canvasWidth){
 		//  Convert to xyz for 3d plot
 
 
-		// var quad = {
-		// 	x:imgData.data[i],     //Red
-		// 	y:imgData.data[i + 1], //Green
-		// 	z:imgData.data[i + 2], //Blue
-		// 	// q:imgData.data[i + 3]
-		// };
+		var quad = {
+			x:imgData.data[i],     //Red
+			y:imgData.data[i + 1], //Green
+			z:imgData.data[i + 2], //Blue
+			fillColor : 'rgba('+imgData.data[i]+','+ imgData.data[i + 1]+','+ imgData.data[i + 2]+','+ 150+')'// q:imgData.data[i + 3]
+		};
 
-	  quad[0] =imgData.data[i];
-	  quad[1] =imgData.data[i + 1];
-	  quad[2] =imgData.data[i + 2];
+	  // quad[0] =imgData.data[i];
+	  // quad[1] =imgData.data[i + 1];
+	  // quad[2] =imgData.data[i + 2];
 	  // quad[3] =imgData.data[i + 3];  //commented out because I do not use it for anything.
 	  result.push(quad);
 	}
@@ -83,6 +83,9 @@ function scatterPlot(imgData) {
               width: 255,
               height: 255,
               depth: 255
+          },
+          series:{
+            turboThreshold :40000000
           }
       },
       yAxis: {
