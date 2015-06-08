@@ -2,8 +2,11 @@
 function imgDataToQuad(imgData, canvasWidth){
 	//function will take image data and make nested array quad with rgba values for each one of the quads.  [[R, G, B, A],[R, G, B, A],...] i.e. [[255,255,10,255],...]
 	var start = new Date;
+  // limit data points to 9600 for processing time.
+  var multiple = imgData.data.length/9600;
+  console.log(imgData.data.length/256);
 	var result = [];
-	for(i = 0; i < imgData.data.length; i +=512) {
+	for(i = 0; i < imgData.data.length; i +=multiple) {
 		var quad = new Array(3);
 		
 
@@ -31,9 +34,11 @@ function imgDataToQuad(imgData, canvasWidth){
 };
 
 function scatterPlot(imgData) {
-	console.log($('#container').highcharts());
-	if ($('#container').highcharts()){
-		$('#container').highcharts().destroy();
+	if ($('#container').highcharts()) {
+    // console.dir($('#container').highcharts());
+    var child = $('#container').remove();
+    console.dir(child);
+    // $('#container').highcharts().destroy();
 	}
 	pixelData=imgDataToQuad(imgData);
     // Give the points a 3D feel by adding a radial gradient
@@ -109,12 +114,12 @@ function scatterPlot(imgData) {
           enabled: true
       },
       tooltip: {
-          pointFormat: '{series.name}: <b>{point.y}</b><br/>',
           formatter: function() {
-            console.dir(this);
-            return '<b>Red : ' + this.point.x + '</b><br/><b>Green : ' + this.point.y + '</b><br/><b>Blue : ' +this.point.z+'</b>'
+            // console.dir(this);
+            return '<b>Red : ' + this.point.x + '</b><br/><b>Green : ' + this.point.y + '</b><br/><b>Blue : ' +this.point.z+'</b>';
           }, 
-          shared: true
+          shared: true,
+          style:{padding :'10px'}
       },
       series: [{
           name: 'Color',
@@ -122,7 +127,6 @@ function scatterPlot(imgData) {
           data: pixelData
       }]
   });
-
   // Add mouse events for rotation
   $(chart.container).bind('mousedown.hc touchstart.hc', function (e) {
       e = chart.pointer.normalize(e);
