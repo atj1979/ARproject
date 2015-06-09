@@ -11,7 +11,13 @@ function hexToRGB (hexVal){
 	colorObj.b = hexToB(hexVal);
 	return colorObj;
 };
-
+function getColors(imgData, startIndex){
+	return {
+				r : imgData.data[pixelNum],
+				g : imgData.data[pixelNum+1],
+				b : imgData.data[pixelNum+2]
+	}
+};
 function colorFilter(imgData, pixelNum, colorObj, range){
 	// will return true or false based on wheter a the pixel color is within the specified range
 	// an actual solution will involve color calculation in a color cube.   
@@ -65,7 +71,6 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 			for (var rx = 0; rx <= 2 * radius; rx++){
 				console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
 				if (ry !== radius || rx !== radius){
-
 					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
 				}
 			}
@@ -103,7 +108,7 @@ function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 function colorRange(centerColor, compColor, range){
 	//distance = sqrt((r1-r2)^2+(g1-g2)^2+(b1-b2)^2)
 	//the formula will be changed such that distance/range will be squared to prevent using Math.sqrt() because it is an expensive operation. Also Math.pow() will not be used because it is also slightly more expensive, because the function call is slightly more expensive. 
-	
+	range = range || 50;
 	if (
 		range * range  >= 
 			(centerColor.r - compColor.r) * (centerColor.r - compColor.r) +
