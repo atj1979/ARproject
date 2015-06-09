@@ -44,14 +44,14 @@ function colorGradient(imgData, pixelNum, colorObj, range){
 function getNearbyPx (imgData, pixelNum, radius, width){
 	// Will return an array of the starting indices of the surrounding pixels.
 	
-	var maxRows = imgData / ( 4 * width); 
+	var maxRows = imgData.data.length / ( 4 * width); 
 	// get current pixel x and y
 	var xy = xyTranslate(pixelNum, width);
 	var surrPxIndex = [];
 	var radius = radius ? radius : 1;
-
 	//skip pixels on edges.
 	//is pixel near an edge ?
+
 	if ( xy.x - radius > 0
 		&& xy.x + radius < width 
 		&& xy.y - radius > 0
@@ -60,10 +60,13 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 
 		// double loops here based on radius 
 		// this is really a box, where the radius is the shortest distance to an edge
-		for (var ry = 0; ry < 2 * radius; ry++){
-			for (var rx = 0; rx < 2 * radius; rx++){
-				if (rx !== radius && ry !== radius){
-					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry));
+					
+		for (var ry = 0; ry <= 2 * radius; ry++){
+			for (var rx = 0; rx <= 2 * radius; rx++){
+				console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
+				if (ry !== radius || rx !== radius){
+
+					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
 				}
 			}
 		}
@@ -112,6 +115,9 @@ function colorRange(centerColor, compColor, range){
 		return false;
 	}
 };
+
+
+
 
 function xyTranslate (inputIndex, canvasWidth, picData){
 	//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.

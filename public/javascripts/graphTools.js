@@ -3,33 +3,33 @@ function imgDataToQuad(imgData, canvasWidth){
 	//function will take image data and make nested array quad with rgba values for each one of the quads.  [[R, G, B, A],[R, G, B, A],...] i.e. [[255,255,10,255],...]
 	var start = new Date;
   // limit data points to 9600 for processing time.
-  var multiple = imgData.data.length/9600;
-  console.log(imgData.data.length/256);
+  var multiple = imgData.data.length/2400;
 	var result = [];
 	for(i = 0; i < imgData.data.length; i +=multiple) {
-		var quad = new Array(3);
-		
+    
 
-		//  Convert to xyz for 3d plot
+    //  Convert to xyz for 3d plot
 
 
-		var quad = {
-			x:imgData.data[i],     //Red
-			y:imgData.data[i + 1], //Green
-			z:imgData.data[i + 2], //Blue
-			fillColor : 'rgba('+imgData.data[i]+','+ imgData.data[i + 1]+','+ imgData.data[i + 2]+','+ 150+')'// q:imgData.data[i + 3]
-		};
+    var quad = {
+      x:imgData.data[i],     //Red
+      y:imgData.data[i + 1], //Green
+      z:imgData.data[i + 2], //Blue
+      fillColor : 'rgba('+imgData.data[i]+','+ imgData.data[i + 1]+','+ imgData.data[i + 2]+','+ 150+')'// q:imgData.data[i + 3]
+    };
 
+		// var quad = new Array(4);
 	  // quad[0] =imgData.data[i];
 	  // quad[1] =imgData.data[i + 1];
 	  // quad[2] =imgData.data[i + 2];
 	  // quad[3] =imgData.data[i + 3];  //commented out because I do not use it for anything.
-	  result.push(quad);
-	}
-	// an alternate method might include var pixels = new Uint8ClampedArray(64); there are some html5 benefits.
-	// console.log(result.length);
+    result.push(quad);
+  }
+  // an alternate method might include var pixels = new Uint8ClampedArray(64); there are some html5 benefits.
+  // console.log(result.length);
+  // console.log("# of pixels calculated" + result.length);
 	var stop = new Date;
-	console.log("Calc time imgDataToQuad",stop-start);
+	// console.log("Calc time imgDataToQuad",stop-start);
 	return result;
 };
 

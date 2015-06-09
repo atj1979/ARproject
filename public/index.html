@@ -154,7 +154,9 @@
 			var imgData = context.getImageData(0,0, canvas.width, canvas.height);
 			context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 			scatterPlot(imgData);
-
+			//TESTING!!!!TESTING!!!!!!
+			// bloomSearch(imgData);
+			linearObjSearch(imgData);
 		});
 
 
@@ -214,10 +216,10 @@
 			}
 			average.x=average.x/average.counter;
 			average.y=average.y/average.counter;
-			context.fillStyle = "black";
 
-			//context.drawImage(overlay,average.x, average.y, 423, 119);
-			//context.fillRect(average.x, average.y, resolution, resolution);
+			// context.fillStyle = "black";
+			// context.drawImage(overlay,average.x, average.y, 423, 119);
+			// context.fillRect(average.x, average.y, resolution, resolution);
 
 			var stop = new Date;
 			console.log("Calc time each frame",stop-start);
@@ -231,6 +233,8 @@
 
 		
 		trackedObjects = {
+			nextId : 0,
+
 
 
 			//objects will be tracked as boxes - because that is easy
@@ -245,27 +249,24 @@
 			// 	topMost:
 			// 	bottomMost:
 			// 	calcCenter:
+			//  pixelCount:
 			// }
 
 		};
 
 
 
-		
-
-		function bloomSearch (imgData, startIndex, canvasWidth){
+		function bloomSearch (imgData, startIndex, canvasWidth, trackedBuffer){
 			//bloom search will search each pixel , compare it to surrounding pixels and decide if that pixel is part of an object.
 
 			//create an empty array that matches the image # of pixels, not the # of RGBA quintuplets
-			var buffer = Uint8Array(imgData.data.length/4);
+
+			var buffer = new Uint8Array(imgData.data.length/4);
+			console.dir(buffer);
 
 			//Method 1:  Bloom search, sense an object if it has pixels around it and search the surrounding pixels - will be recursive
 
 			//bloom searh will be employed for existing objects
-
-			//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
-			
-			//linear search will find all of the objects first.
 
 
 
@@ -274,6 +275,26 @@
 
 			//update image array with number correlating to the object that it is part of 
 		};
+ 
+
+		function linearObjSearch (imgData, startIndex, canvasWidth){
+			
+			//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
+			
+			//linear search will find all of the objects first.
+
+			// this function will search each line of the image and get a simple object detection - stored in trackedObjects.
+			//if the current pixel is within a color range of the previous 4 pixels (think 3x3 grid of pixels - the first 5 pixels starting top left)
+
+			//getNearbyPx (imgData, pixelNum, radius, width)
+
+			console.dir(getNearbyPx(imgData, 32+640*4*14, 1, 640));
+
+
+
+			var buffer = new Uint8Array(imgData.data.length/4);
+
+		}
 
 
 
