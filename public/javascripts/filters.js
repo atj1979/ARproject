@@ -13,9 +13,9 @@ function hexToRGB (hexVal){
 };
 function getColors(imgData, startIndex){
 	return {
-				r : imgData.data[pixelNum],
-				g : imgData.data[pixelNum+1],
-				b : imgData.data[pixelNum+2]
+				r : imgData.data[startIndex],
+				g : imgData.data[startIndex+1],
+				b : imgData.data[startIndex+2]
 	}
 };
 function colorFilter(imgData, pixelNum, colorObj, range){
@@ -47,38 +47,7 @@ function colorGradient(imgData, pixelNum, colorObj, range){
 	return colorFilter(imgData, pixelNum, colorObj, range);
 };
 
-function getNearbyPx (imgData, pixelNum, radius, width){
-	// Will return an array of the starting indices of the surrounding pixels.
-	
-	var maxRows = imgData.data.length / ( 4 * width); 
-	// get current pixel x and y
-	var xy = xyTranslate(pixelNum, width);
-	var surrPxIndex = [];
-	var radius = radius ? radius : 1;
-	//skip pixels on edges.
-	//is pixel near an edge ?
 
-	if ( xy.x - radius > 0
-		&& xy.x + radius < width 
-		&& xy.y - radius > 0
-		&& xy.y + radius < maxRows 
-		) {
-
-		// double loops here based on radius 
-		// this is really a box, where the radius is the shortest distance to an edge
-					
-		for (var ry = 0; ry <= 2 * radius; ry++){
-			for (var rx = 0; rx <= 2 * radius; rx++){
-				console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
-				if (ry !== radius || rx !== radius){
-					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
-				}
-			}
-		}
-
-	}
-	return surrPxIndex;
-}
 
 function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	radius = radius || 1;

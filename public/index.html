@@ -12,6 +12,7 @@
 	<script src="http://code.highcharts.com/highcharts-3d.js"></script>
 	<script src="http://code.highcharts.com/modules/exporting.js"></script>
 
+	<script src="./javascripts/objectDet.js"></script>
 	<script src="./javascripts/filters.js"></script>
 	<script src="./javascripts/graphTools.js"></script>
 	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
@@ -52,6 +53,8 @@
 
 	</body>
 	<script>
+		// the buffer is an approximation of the canvas data, it will track the ids in the current location of the pixel.  
+	  window.buffer; 
 		
 
 	/* Image process idea.  
@@ -156,7 +159,7 @@
 			scatterPlot(imgData);
 			//TESTING!!!!TESTING!!!!!!
 			// bloomSearch(imgData);
-			linearObjSearch(imgData, 4000, canvas.width);
+			buffer = new Uint8Array(imgData.data.length/4);
 		});
 
 
@@ -198,6 +201,8 @@
 			
 
 			for (var i = 0; i < imgData.data.length; i+=resolution){
+				linearObjSearch(imgData, i, canvas.width);
+
 				if (
 					colorFilter(imgData, i, colorObj)
 					//check surrounding pixels
@@ -230,113 +235,8 @@
 			//colorObj will contain min and max values for each RGB. 
 		};
 
-		// the buffer is an approximation of the canvas data, it will track the ids in the current location of the pixel.  
+		
 
-		var trackedObjects = {
-			nextId : 0
-
-			//objects will be tracked as boxes - because that is easy
-			//with a calculated center for frame to frame tracking.
-
-		};
-
-
-		var Shape = {
-			// id:
-			leftMost:0,
-			rightMost:0,
-			topMost:0,
-			bottomMost:0,
-		  pixelCount:0
-		};
-
-
-
-
-		function bloomSearch (imgData, startIndex, canvasWidth, trackedBuffer){
-			//bloom search will search each pixel , compare it to surrounding pixels and decide if that pixel is part of an object.
-
-			//create an empty array that matches the image # of pixels, not the # of RGBA quintuplets
-
-			console.dir(buffer);
-
-			//Method 1:  Bloom search, sense an object if it has pixels around it and search the surrounding pixels - will be recursive
-
-			//bloom searh will be employed for existing objects
-
-
-
-
-
-
-			//update image array with number correlating to the object that it is part of 
-		};
- 
-
-		function linearObjSearch (imgData, startIndex, canvasWidth){
-			
-			//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
-			
-			//linear search will find all of the objects first.
-
-			// this function will search each line of the image and get a simple object detection - stored in trackedObjects.
-			//if the current pixel is within a color range of the previous 4 pixels (think 3x3 grid of pixels - the first 5 pixels starting top left)
-
-			//getNearbyPx (imgData, pixelNum, radius, width)
-
-			//if 4 of the nearby pixels are close to the center pixel, 
-			//the label the the pixel the same as the previous 4 pixels
-			//if the previous 4 pixels are matched, but they do not have an object 
-			// make a new object with the new id
-			var buffer = new Uint8Array(imgData.data.length/4);
-
-			var nearbyPx = getNearbyPx(imgData, startIndex, 1, canvasWidth);
-			var valid = nearbyPx.reduce(function (acc, startInd){
-				if (!acc){
-					return false;
-				} else {
-					return colorRange(getColors(imgData,startIndex), getColors(imgData, startInd), 50);
-				}
-
-
-			}, true)
-			console.log(valid);
-			console.log(toBufferIndex(imgData, startIndex, buffer));
-			if (valid){
-				index = toBufferIndex(imgData, startIndex, buffer);
-				if (!buffer[index]){
-					buffer[index] = nextId;
-					trackedObjects[nextId+'']= new shape
-					nextId++;
-
-				} else {
-					buffer[index] = buffer[index-1];
-				}
-			}
-
-			// console.dir(getNearbyPx(imgData, 32+640*4*14, 1, 640));
-
-
-
-
-		}
-		function toBufferIndex(imgData, startIndex, buffer){
-			var ratio = imgData.data.length/buffer.length;
-			// return the 
-			return startIndex/ratio 
-
-		};
-
-
-
-
-
-
-
-
-
-
-
-
+		
 	</script>
 </html>
