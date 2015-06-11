@@ -9,18 +9,17 @@ var trackedObjects = {
 				}
 				//get rid of things whose combining color is more dark than light
 				//decide this by getting the average color of an object
-				console.log(this);
 			}
 		}
-		for (var prop in this){
-			if (
-				this[prop].redTotal/this[prop].pixelCount <= 80 &&
-				this[prop].greenTotal/this[prop].pixelCount <= 80 &&
-				this[prop].blueTotal/this[prop].pixelCount <= 80
-			){
-				delete this[prop];
-			}
-		}
+		// for (var prop in this){
+		// 	if (
+		// 		this[prop].redTotal/this[prop].pixelCount <= 80 &&
+		// 		this[prop].greenTotal/this[prop].pixelCount <= 80 &&
+		// 		this[prop].blueTotal/this[prop].pixelCount <= 80
+		// 	){
+		// 		delete this[prop];
+		// 	}
+		// }
 	},
 	resetID: function (){
 		// to reset the ID's we would need to also reset the grid of tracked objects as well
@@ -73,6 +72,7 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 	var maxRows = imgData.data.length / ( 4 * width); 
 	// get current pixel x and y
 	var xy = xyTranslate(pixelNum, width);
+	console.log(xy);
 	var surrPxIndex = [];
 	var radius = radius ? radius : 1;
 	//skip pixels on edges.
@@ -95,7 +95,7 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 		for (var ry = 0; ry <= 2 * radius; ry++){
 			for (var rx = 0; rx <= 2 * radius; rx++){
 				// console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
-				if (ry !== radius || rx !== radius || rx * ry < 5){
+				if (rx !== radius || ry !== radius ){
 					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
 				}
 			}
@@ -136,29 +136,24 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	//if the previous 4 pixels are matched, but they do not have an object 
 	// make a new object with the new id
 	
-
+	var valid;
 	var nearbyPx = getNearbyPx(imgData, startIndex, radius, canvasWidth);
-			console.log(nearbyPx, startIndex, radius, canvasWidth);
-
-	var valid = nearbyPx.reduce(function (acc, startInd){
-		console.log(acc);
-		if (!acc){
-			return false;
-		} else {
+	if (nearbyPx.length > 0){
+		valid = nearbyPx.every(function (startInd){
 			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 30);
-		}
-	}, true);
-	console.log(valid);
+		});
+	} else {
+		valid = false;
+	}
 	// console.dir(window.buffer);
 	if (valid){
 		var index = toBufferIndex(imgData, startIndex, window.buffer);
-		// console.log(index);
 		if (!buffer[index-radius]){
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
 
 			trackedObjects[trackedObjects.nextId+''] = new Shape();
-			trackedObjects[trackedObjects.nextId+''].updateTrackedObject( startIndex, canvasWidth, imgData);
+			trackedObjects[trackedObjects.nextId+''].updateTrackedObject(startIndex, canvasWidth, imgData);
 			trackedObjects.nextId++;
 
 		} else {
@@ -166,7 +161,6 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			// set the buffer number equal to the line above's buffer - because that has already been calculated
 			// use the top left corner of the nearbyPx, that's easy to reason about.
 			var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
-			console.log(valid ,index, rowUp);
 			buffer[index] = buffer[rowUp];
 			trackedObjects[buffer[index]].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}

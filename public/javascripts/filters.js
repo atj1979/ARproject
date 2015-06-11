@@ -121,7 +121,7 @@ function xyTranslate (inputIndex, canvasWidth, picData){
 
 function indexFromXY (x, y, canvasWidth){
 	//  will return the index from x and y 
-	return x + y * canvasWidth - 1;
+	return x + y * canvasWidth;
 
 
 };

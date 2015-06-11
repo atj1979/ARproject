@@ -32,3 +32,8 @@ video {
   max-width: 800px;
   margin: 0 auto;
 }
+
+.viewWindow {
+	width:320px;
+	height:240px;
+}
