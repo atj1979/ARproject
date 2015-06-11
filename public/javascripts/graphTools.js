@@ -9,12 +9,11 @@ function imgDataToQuad(imgData, canvasWidth){
     
 
     //  Convert to xyz for 3d plot
-
-
     var quad = {
       x:imgData.data[i],     //Red
       y:imgData.data[i + 1], //Green
       z:imgData.data[i + 2], //Blue
+      //  fill color per plotted pixel
       fillColor : 'rgba('+imgData.data[i]+','+ imgData.data[i + 1]+','+ imgData.data[i + 2]+','+ 150+')'// q:imgData.data[i + 3]
     };
 
@@ -26,8 +25,6 @@ function imgDataToQuad(imgData, canvasWidth){
     result.push(quad);
   }
   // an alternate method might include var pixels = new Uint8ClampedArray(64); there are some html5 benefits.
-  // console.log(result.length);
-  // console.log("# of pixels calculated" + result.length);
 	var stop = new Date;
 	// console.log("Calc time imgDataToQuad",stop-start);
 	return result;

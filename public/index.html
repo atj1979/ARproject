@@ -26,7 +26,7 @@
 		client supports video/camera, but for the sake of illustrating the 
 		elements involved, they are created with markup (not JavaScript)
 		-->
-		<video id="video" width="640" height="480" autoplay></video>
+		<video id="video" width="40" height="30" autoplay></video>
 		<!-- <input type="file" capture="camera" accept="image/*" id="video" name="cameraInput"> -->
 		<button id="snap">Snap Photo</button>
 		<button id="profile">Take Profile</button>
@@ -36,15 +36,13 @@
 			<div>BLUE<input id="blue" type="number" /></div>
 		</div> -->
 		<input id="range" type="number" value="100"></input>
-		<input id="aim" type="checkbox">AIM </input>
-		<button id="profile">Get Color Profile</button>
 		<form id="color">
 			<input id="background-color" 
 				type="color" 
 				value="#ff0000" 
 				onchange="">
 		</form>
-		<canvas id="canvas" width="640" height="480" style="border:1px solid #000000;"></canvas>
+		<canvas id="canvas" width="40" height="30" style="border:1px solid #000000;"></canvas>
 		<!-- <div style="display:none;">
 		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
 		</div> -->
@@ -105,7 +103,7 @@
 				// WebKit-prefixed
 				console.log("got to STAGE 2 - WebKit-prefixed");
 				navigator.webkitGetUserMedia(videoObj, function(stream){
-					video.src = window.webkitURL.createObjectURL(stream);
+					video.src = window.URL.createObjectURL(stream);
 					video.play();
 				}, errBack);
 			}
@@ -128,10 +126,12 @@
       context.drawImage(video, 0, 0);
       // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
       // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
-    	var data = context.getImageData(0,0, canvas.width, canvas.height);
+	  	var data = context.getImageData(0,0, canvas.width, canvas.height);
     	// clear the canvas after we have our data
     	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+			window.buffer = new Uint8Array(data.data.length/4);
     	processImage(context, data, null, canvas.width, img, colorObj);
+    	trackedObjects.removeSmallObjects();
 
 	  };
 
@@ -140,13 +140,12 @@
 			var colorObj=hexToRGB(document.getElementById("background-color").value)
 			
 			takePicture(colorObj);
-
-			var runTime = takePicture.bind(null, colorObj);
-			var PID = setInterval(runTime, 100);
+			// var runTime = takePicture.bind(null, colorObj);
+			// var PID = setInterval(runTime, 100);
 			//clear previous intervals.  Future- should be exported to be canceled with a button.
-			if (PID > 1){
-				clearInterval(PID-1);
-			};
+			// if (PID > 1){
+			// 	clearInterval(PID-1);
+			// };
 		});
 
 		document.getElementById("profile").addEventListener('click', function(){
@@ -186,7 +185,8 @@
 			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
 			//Basic Search - search every pixel.
 			//make new array to store results
-			var resolution = 8; //must be divisible by 4 because of RGBA convention
+			var resolution = 1; //must be even divisible (width /resolution)  object tracking depends on exact grid 
+
 			var pos;
 			var average = {
 				x:0,
@@ -199,44 +199,52 @@
 			// better color identification could be identified by 3 phase - vector analysis
 			// context.fillStyle = "yellow";
 			
+			// resolution * 4 addresses rgba convention
+			for (var i = 0; i < imgData.data.length; i+=resolution*4){
+				linearObjSearch(imgData, i, canvas.width, resolution);
+				// pos = xyTranslate(i, canvasWidth);
 
-			for (var i = 0; i < imgData.data.length; i+=resolution){
-				linearObjSearch(imgData, i, canvas.width);
-
-				if (
-					colorFilter(imgData, i, colorObj)
-					//check surrounding pixels
-						//get the surrounding pixels
-						//see if each of them is withing the color colorGradient
+				// context.fillRect(pos.x, pos.y, 1, 1);
+			// 	if (
+			// 		colorFilter(imgData, i, colorObj)
+			// 		//check surrounding pixels
+			// 			//get the surrounding pixels
+			// 			//see if each of them is withing the color colorGradient
 						
-					// && noiseReduce(imgData, i, canvasWidth, colorObj)
-					&& colorGradient(imgData, i, colorObj, 50)
-				){
-					pos = xyTranslate(i, canvasWidth);
-					average.counter+=1;
-					average.x+=pos.x;
-					average.y+=pos.y;
-					context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
-				}
+			// 		// && noiseReduce(imgData, i, canvasWidth, colorObj)
+			// 		&& colorGradient(imgData, i, colorObj, 50)
+			// 	){
+			// 		pos = xyTranslate(i, canvasWidth);
+			// 		average.counter+=1;
+			// 		average.x+=pos.x;
+			// 		average.y+=pos.y;
+			// 		context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
+			// 	}
 			}
-			average.x=average.x/average.counter;
-			average.y=average.y/average.counter;
 
-			// context.fillStyle = "black";
-			// context.drawImage(overlay,average.x, average.y, 423, 119);
-			// context.fillRect(average.x, average.y, resolution, resolution);
+			for (var prop in trackedObjects){
+				if (typeof trackedObjects[prop] === 'object'){
+					//calculate box from each object
+					//calculate random color
+
+					context.strokeStyle = "rgba(255,100,100, .1)";//"black";
+					context.lineWidth = 1; 
+					// context.drawImage(overlay,average.x, average.y, 423, 119);
+					context.strokeRect(
+						trackedObjects[prop].leftMost, 
+						trackedObjects[prop].bottomMost, 
+						trackedObjects[prop].rightMost - trackedObjects[prop].leftMost, 
+						trackedObjects[prop].bottomMost - trackedObjects[prop].topMost
+					);
+					
+				}
+			
+
+			}
 
 			var stop = new Date;
 			console.log("Calc time each frame",stop-start);
 		};
-
-		function colorCount (colorObj){
-			//will get a count of pixels within a color range.
-			//colorObj will contain min and max values for each RGB. 
-		};
-
-		
-
 		
 	</script>
 </html>

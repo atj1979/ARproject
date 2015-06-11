@@ -1,19 +1,70 @@
 var trackedObjects = {
-	nextId : 1
+	nextId : 1,
+	removeSmallObjects: function (){
+		for (var prop in this){
 
+			if (typeof this[prop] === 'object'){
+				if (this[prop].pixelCount < 50){
+					delete this[prop];
+				}
+				//get rid of things whose combining color is more dark than light
+				//decide this by getting the average color of an object
+				console.log(this);
+			}
+		}
+		for (var prop in this){
+			if (
+				this[prop].redTotal/this[prop].pixelCount <= 80 &&
+				this[prop].greenTotal/this[prop].pixelCount <= 80 &&
+				this[prop].blueTotal/this[prop].pixelCount <= 80
+			){
+				delete this[prop];
+			}
+		}
+	},
+	resetID: function (){
+		// to reset the ID's we would need to also reset the grid of tracked objects as well
+		// save the prop number 
+		// give it the new number 
+		//search the tracked object grid and update everything with the previous number 
+
+
+		//create an object with the old numbers as keys and the new numbers as values
+			// loops through the grid
+				// update the grid with grid[position] = object[number in grid]  
+	}
 	//objects will be tracked as boxes - because that is easy
 	//with a calculated center for frame to frame tracking.
 
 };
 
 
-var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount){
-	// id:
-	this.leftMost:leftMost,
-	this.rightMost:rightMost,
-	this.topMost:topMost,
-	this.bottomMost:bottomMost,
-  this.pixelCount:pixelCount
+var Shape = function (ID, leftMost, rightMost, topMost, bottomMost, pixelCount){
+	// this.id = id || 0,
+	this.leftMost = leftMost || 0,
+	this.rightMost = rightMost || 0,
+	this.topMost = topMost || 0,
+	this.bottomMost = bottomMost || 0,
+  this.pixelCount = pixelCount || 0,
+  this.redTotal = 0,
+  this.greenTotal = 0,
+  this.blueTotal = 0
+};
+
+Shape.prototype.updateTrackedObject = function (index, width, imgData){ 
+	// console.log("updated tracked objects");
+	// get the current x & y of the 
+	var xy = xyTranslate(index, width, imgData);
+	// this.id = nextId 
+	this.leftMost = xy.x < this.leftMost ? xy.x : this.leftMost;
+	this.rightMost = xy.x > this.rightMost ? xy.x : this.rightMost;
+	this.topMost = xy.y < this.topMost ? xy.y : this.topMost;
+	this.bottomMost = xy.y > this.bottomMost ? xy.y : this.bottomMost;
+	this.pixelCount++;
+	this.redTotal += imgData.data[index];
+	this.greenTotal += imgData.data[index+1];
+	this.blueTotal += imgData.data[index+2];
+
 };
 
 function getNearbyPx (imgData, pixelNum, radius, width){
@@ -32,14 +83,19 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 		&& xy.y - radius > 0
 		&& xy.y + radius < maxRows 
 		) {
-			console.log("SHOULD GET INDICIES");
+			// console.log("SHOULD GET INDICIES");
 		// double loops here based on radius 
 		// this is really a box, where the radius is the shortest distance to an edge
-					
+		// indexFromXY(xy.x - radius, xy.y - radius)
+		// indexFromXY(xy.x - radius, xy.y)
+		// indexFromXY(xy.x - radius)
+
+
+
 		for (var ry = 0; ry <= 2 * radius; ry++){
 			for (var rx = 0; rx <= 2 * radius; rx++){
-				console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
-				if (ry !== radius || rx !== radius){
+				// console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
+				if (ry !== radius || rx !== radius || rx * ry < 5){
 					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
 				}
 			}
@@ -54,7 +110,7 @@ function bloomSearch (imgData, startIndex, canvasWidth, trackedBuffer){
 
 	//create an empty array that matches the image # of pixels, not the # of RGBA quintuplets
 
-	console.dir(buffer);
+	// console.dir(buffer);
 
 	//Method 1:  Bloom search, sense an object if it has pixels around it and search the surrounding pixels - will be recursive
 
@@ -64,7 +120,7 @@ function bloomSearch (imgData, startIndex, canvasWidth, trackedBuffer){
 };
 
 
-function linearObjSearch (imgData, startIndex, canvasWidth){
+function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	
 	//Method 2:  Linear search, if each pixel around it is within the range - (all pixels near the item) see what that that object is (via majority and )
 	
@@ -75,57 +131,57 @@ function linearObjSearch (imgData, startIndex, canvasWidth){
 
 	//getNearbyPx (imgData, pixelNum, radius, width)
 
-	//if 4 of the nearby pixels are close to the center pixel, 
-	//the label the the pixel the same as the previous 4 pixels
+	//if all of the nearby pixels are close (in color) to the center pixel, 
+	//then label the the pixel the same as the previous 4 pixels
 	//if the previous 4 pixels are matched, but they do not have an object 
 	// make a new object with the new id
 	
 
-	var nearbyPx = getNearbyPx(imgData, startIndex, 1, canvasWidth);
+	var nearbyPx = getNearbyPx(imgData, startIndex, radius, canvasWidth);
+			console.log(nearbyPx, startIndex, radius, canvasWidth);
+
 	var valid = nearbyPx.reduce(function (acc, startInd){
-		// console.log(getColors(imgData, startIndex), getColors(imgData, startInd));
-		// console.log(colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 200));
-		if (acc){
-			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 200);
-		} else {
+		console.log(acc);
+		if (!acc){
 			return false;
+		} else {
+			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 30);
 		}
 	}, true);
-
+	console.log(valid);
+	// console.dir(window.buffer);
 	if (valid){
-		var index = toBufferIndex(imgData, startIndex, buffer);
-		console.log(index);
-		if (!buffer[index]){
+		var index = toBufferIndex(imgData, startIndex, window.buffer);
+		// console.log(index);
+		if (!buffer[index-radius]){
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
 
 			trackedObjects[trackedObjects.nextId+''] = new Shape();
-			nextId++;
+			trackedObjects[trackedObjects.nextId+''].updateTrackedObject( startIndex, canvasWidth, imgData);
+			trackedObjects.nextId++;
 
 		} else {
-			buffer[index] = buffer[index-1];
+			// console.log("found a match");
+			// set the buffer number equal to the line above's buffer - because that has already been calculated
+			// use the top left corner of the nearbyPx, that's easy to reason about.
+			var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
+			console.log(valid ,index, rowUp);
+			buffer[index] = buffer[rowUp];
+			trackedObjects[buffer[index]].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}
 	}
 };
 
 function toBufferIndex(imgData, startIndex, buffer){
+	// console.dir(imgData.data);
+	// console.dir(buffer);
 	var ratio = imgData.data.length/buffer.length;
 	// return the 
-	return startIndex/ratio 
+	return startIndex/ratio; 
 
 };
 
-var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount){
-	this.leftMost:leftMost,
-	this.rightMost:rightMost,
-	this.topMost:topMost,
-	this.bottomMost:bottomMost,
-  this.pixelCount:pixelCount
-};
 
-function updateTrackedObject (){
-
-	
-};
 
 
