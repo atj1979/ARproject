@@ -2,23 +2,40 @@
 <html>
 <head>
   <title>Mocha Spec Runner</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.2.5/mocha.min.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.2.5/mocha.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.2.5/mocha.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.0.0/chai.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/1.7.3/sinon-min.js"></script>
-  <script>
-    mocha.setup('bdd');
-    window.expect = chai.expect;
-    $(function() {
-      window.mochaPhantomJS ? mochaPhantomJS.run() : mocha.run();
-    });
-  </script>
-  <script src="../public/javascripts/filters.js"></script>
-  <script src="../public/javascripts/graphTools.js"></script>
-  <script src="../public/javascripts/objectDet.js"></script>
+  <script src="http://chaijs.com/chai.js"></script> -->
+  <link rel="stylesheet" href="../bower_components/mocha/mocha.css">
+  <script src="../bower_components/mocha/mocha.js"></script>
+  <script src="../bower_components/jquery/dist/jquery.js"></script>
+  <script src="../bower_components/chai/chai.js"></script>
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sinon.js/1.7.3/sinon-min.js"></script> -->
+
+
+  <!-- <script src="../public/javascripts/filters.js"></script> -->
+
+
+
+  <!-- <script src="../public/javascripts/graphTools.js"></script> -->
+  <!-- <script src="../public/javascripts/objectDet.js"></script> -->
 </head>
 <body>
 <div id="mocha"></div>
 </body>
+<script>
+    $(function() {
+      mocha.setup({
+        ui: 'tdd',
+        ignoreLeaks: true,
+        asyncOnly: true,
+        reporter:'html'
+      });
+      window.expect = chai.expect;
+      mocha.run();
+      
+    });
+</script>
+<script src="./filtersSpec.js"></script>
 </html>
