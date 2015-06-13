@@ -1,10 +1,11 @@
 var trackedObjects = {
 	nextId : 1,
-	removeSmallObjects: function (){
+	removeSmallObjects: function (objSize){
+		objSize = objSize || 10;
 		for (var prop in this){
 
 			if (typeof this[prop] === 'object'){
-				if (this[prop].pixelCount < 50){
+				if (this[prop].pixelCount < objSize){
 					delete this[prop];
 				}
 				//get rid of things whose combining color is more dark than light
@@ -39,7 +40,7 @@ var trackedObjects = {
 
 
 var Shape = function (ID, leftMost, rightMost, topMost, bottomMost, pixelCount){
-	// this.id = id || 0,
+	this.id = ID || 0,
 	this.leftMost = leftMost || 0,
 	this.rightMost = rightMost || 0,
 	this.topMost = topMost || 0,
@@ -72,7 +73,7 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 	var maxRows = imgData.data.length / ( 4 * width); 
 	// get current pixel x and y
 	var xy = xyTranslate(pixelNum, width);
-	console.log(xy);
+	// console.log(xy);
 	var surrPxIndex = [];
 	var radius = radius ? radius : 1;
 	//skip pixels on edges.
@@ -96,7 +97,7 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 			for (var rx = 0; rx <= 2 * radius; rx++){
 				// console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
 				if (rx !== radius || ry !== radius ){
-					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
+					surrPxIndex.push(indexFromXY(xy.x - radius + rx*4, xy.y - radius + ry*4, width));
 				}
 			}
 		}
@@ -147,8 +148,10 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	}
 	// console.dir(window.buffer);
 	if (valid){
+		var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
 		var index = toBufferIndex(imgData, startIndex, window.buffer);
-		if (!buffer[index-radius]){
+		if (!buffer[rowUp]){
+			console.log("new object");
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
 
@@ -157,12 +160,13 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			trackedObjects.nextId++;
 
 		} else {
-			// console.log("found a match");
+			console.log("found a match", valid, nearbyPx, index, buffer[index], buffer[rowUp]);
 			// set the buffer number equal to the line above's buffer - because that has already been calculated
 			// use the top left corner of the nearbyPx, that's easy to reason about.
-			var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
+			
 			buffer[index] = buffer[rowUp];
-			trackedObjects[buffer[index]].updateTrackedObject(startIndex, canvasWidth, imgData);
+			console.log(trackedObjects[buffer[index]]);
+			trackedObjects[buffer[index]+""].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}
 	}
 };

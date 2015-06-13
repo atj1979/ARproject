@@ -3,16 +3,28 @@
   var expect = chai.expect;
   var should = chai.should();
   var assert = chai.assert; 
-  describe('Filter Spec', function() {
-    describe('identity', function() {
-      console.log("hello testing");
-      // var uniqueObject = {};
-      it('should fucking work', function() {
-        // expect(_.identity(1)).to.equal(1);
-        // expect(_.identity('string')).to.equal('string');
-        // expect(_.identity(false)).to.be.false;
-        // expect(_.identity(uniqueObject)).to.equal(uniqueObject);
-        expect(true).to.equal(true);
+  describe('Object Detection Spec', function() {
+    var imgData = {};
+    // imgData will be a 10 by 10 grid to keep it simple
+    imgData.data = new Uint8Array(100*4);
+    var buffer = new Uint8Array(imgData.data.length/4);
+    describe('Helper Functions', function() {
+      var thing = new Shape(1,2,3,4,5,6);
+      it('Instantiates a new shape properly', function() {
+        expect(thing.id).to.equal(1);
+        expect(thing.leftMost).to.equal(2);
+        expect(thing.rightMost).to.equal(3);
+        expect(thing.topMost).to.equal(4);
+        expect(thing.bottomMost).to.equal(5);
+        expect(thing.pixelCount).to.equal(6);
+      });
+
+
+      it('Updates a new shape properly',function (){
+        expect(toBufferIndex(imgData, 0, buffer)).to.equal(0);
+        expect(toBufferIndex(imgData, 200, buffer)).to.equal(50); 
+
+
       });
     });
   });
