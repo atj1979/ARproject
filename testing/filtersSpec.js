@@ -1,5 +1,8 @@
 (function home() {
   'use strict';
+  var expect = chai.expect;
+  var should = chai.should();
+  var assert = chai.assert; 
   describe('Filter Spec', function() {
     describe('identity', function() {
       console.log("hello testing");
