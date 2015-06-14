@@ -64,7 +64,6 @@ Shape.prototype.updateTrackedObject = function (index, width, imgData){
 	this.redTotal += imgData.data[index];
 	this.greenTotal += imgData.data[index+1];
 	this.blueTotal += imgData.data[index+2];
-
 };
 
 function getNearbyPx (imgData, pixelNum, radius, width){
@@ -151,7 +150,7 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 		var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
 		var index = toBufferIndex(imgData, startIndex, window.buffer);
 		if (!buffer[rowUp]){
-			console.log("new object");
+			// console.log("new object");
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
 
@@ -160,12 +159,12 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			trackedObjects.nextId++;
 
 		} else {
-			console.log("found a match", valid, nearbyPx, index, buffer[index], buffer[rowUp]);
+			// console.log("found a match", valid, nearbyPx, index, buffer[index], buffer[rowUp]);
 			// set the buffer number equal to the line above's buffer - because that has already been calculated
 			// use the top left corner of the nearbyPx, that's easy to reason about.
 			
 			buffer[index] = buffer[rowUp];
-			console.log(trackedObjects[buffer[index]]);
+			// console.log(trackedObjects[buffer[index]]);
 			trackedObjects[buffer[index]+""].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}
 	}

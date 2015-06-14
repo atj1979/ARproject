@@ -11,6 +11,7 @@ function hexToRGB (hexVal){
 	colorObj.b = hexToB(hexVal);
 	return colorObj;
 };
+
 function getColors(imgData, startIndex){
 	return {
 				r : imgData.data[startIndex],
@@ -18,22 +19,14 @@ function getColors(imgData, startIndex){
 				b : imgData.data[startIndex+2]
 	}
 };
-function colorFilter(imgData, pixelNum, colorObj, range){
+
+function colorFilter(imgData, startIndex, colorObj, range){
 	// will return true or false based on wheter a the pixel color is within the specified range
 	// an actual solution will involve color calculation in a color cube.   
 	range = range || 100;
 
 	// function colorRange(centerColor, compColor, range){...}
-	if (
-		colorRange(
-			colorObj,
-			{
-				r : imgData.data[pixelNum],
-				g : imgData.data[pixelNum+1],
-				b : imgData.data[pixelNum+2]
-			}, 
-			range))
-	{
+	if (colorRange(colorObj, getColors(imgData, startIndex), range)) {
 		return true;
 	} else {
 		return false;
@@ -46,8 +39,6 @@ function colorGradient(imgData, pixelNum, colorObj, range){
 	// Function will check if it is within a straight line distance of current pixel if the gradient is within the radius ; Similar to colorFilter except the colorObj comes from the current pixel.
 	return colorFilter(imgData, pixelNum, colorObj, range);
 };
-
-
 
 function noiseReduce (imgData, pixelNum, canvasWidth, colorObj, radius, layers){
 	radius = radius || 1;
@@ -90,9 +81,6 @@ function colorRange(centerColor, compColor, range){
 	}
 };
 
-
-
-
 function xyTranslate (inputIndex, canvasWidth, picData){
 	//this function will take any one input from the data and return and object with x, y, r, g, b, a keys & appropriate values.  First values start at 0.
 	var result = {};
@@ -103,10 +91,10 @@ function xyTranslate (inputIndex, canvasWidth, picData){
 	var numX = ((numAll - yCalc) * (canvasWidth * 4 ));
 	var xCalc = Math.floor( numX / 4 );
 	
-	//get y - divide by canvas.width to get row
-	result.y = yCalc;
 	//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
 	result.x = xCalc;
+	//get y - divide by canvas.width to get row
+	result.y = yCalc;
 
 	if (picData){
 	// get start index the do the count up from there.
@@ -121,9 +109,7 @@ function xyTranslate (inputIndex, canvasWidth, picData){
 
 function indexFromXY (x, y, canvasWidth){
 	//  will return the index from x and y 
-	return x + y * canvasWidth;
-
-
+	return x * 4 + y * 4 * canvasWidth;
 };
 
 

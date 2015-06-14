@@ -1,4 +1,4 @@
-(function home() {
+(function () {
   'use strict';
   var expect = chai.expect;
   var should = chai.should();
@@ -19,16 +19,16 @@
         expect(thing.pixelCount).to.equal(6);
       });
 
-
-      it('Updates a new shape properly',function (){
+      it('toBufferIndex',function (){
         expect(toBufferIndex(imgData, 0, buffer)).to.equal(0);
         expect(toBufferIndex(imgData, 200, buffer)).to.equal(50); 
-        // function xyTranslate (inputIndex, canvasWidth, picData)
-        expect(xyTranslate(0, 10, imgData)).to.equal({x:0, y:0});
         // thing.updateTrackedObject()
-
-
       });
+      it('Shape.updateTrackedObject', function (){
+        
+      });
+
+
     });
   });
 }());
