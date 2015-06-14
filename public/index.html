@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.2.5/mocha.js"></script> 
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/2.2.5/mocha.css"></script>
+
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-3d.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+	<script src="./javascripts/objectDet.js"></script>
+	<script src="./javascripts/filters.js"></script>
+	<script src="./javascripts/graphTools.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+	</head>
+	<body>
+		<h1>AR Project</h1>
+		<h4>Construction Zone!!!!!!</h4>
+
+		<!--  Code taken from http://davidwalsh.name/browser-camera
+		Ideally these elements aren't created until it's confirmed that the 
+		client supports video/camera, but for the sake of illustrating the 
+		elements involved, they are created with markup (not JavaScript)
+		-->
+		<video id="video" class="viewWindow" autoplay></video>
+		<!-- <input type="file" capture="camera" accept="image/*" id="video" name="cameraInput"> -->
+		<button id="snap">Snap Photo</button>
+		<button id="profile">Take Profile</button>
+		<input id="range" type="number" value="100"></input>
+		<form id="color">
+			<input id="background-color" 
+				type="color" 
+				value="#ff0000" 
+				onchange="">
+		</form>
+		<canvas id="canvas" class="viewWindow" style="border:1px solid #000000;"></canvas>
+		<!-- <div style="display:none;">
+		  <img id="source" src="./images/shriner.jpeg" width="300" height="227" />
+		</div> -->
+		<div id="container" style="height: 400px"></div>
+
+
+	</body>
+	<script>
+		// the buffer is an approximation of the canvas data, it will track the ids in the current location of the pixel.  
+	  window.buffer; 
+		
+
+	/* Image process idea.  
+		per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
+		per image if pixel color matches designated color within a range, 
+			begin searching surrounding pixels, 
+				Stage 1 : only store left most, right most, top most, bottom most 
+					This gets a box to work with
+				Stage 2 : identify local minimums and maximums within range of +/- a few pixels 
+					This should get us points to draw a line and identify an aspect for image rendering and aid in shape recognition
+	*/
+
+
+
+
+
+
+		// Code taken from http://davidwalsh.name/browser-camera
+		// Put event listeners into place
+		window.addEventListener("DOMContentLoaded", function() {
+			// Grab elements, create settings, etc.
+			var canvas = document.getElementById("canvas");
+			var context = canvas.getContext("2d");
+			var video = document.getElementById("video");
+
+			// My code - overlay the canvas on top of the video.
+			// canvas.setAttribute("style", "left:" + video.offsetLeft + "px");
+			// canvas.setAttribute("style", "top:" + - video.offsetTop + "px");
+
+			//videoObj are the constraints of the video stream
+			var videoObj = { "video": true , "audio" :false};
+			var errBack = function (error) {
+				console.log("Video capture error: ", error.code); 
+			};
+			var ONCE = false;
+			// Put video listeners into place
+			if(navigator.getUserMedia) { // Standard
+				navigator.getUserMedia(videoObj, function(stream) {
+					if (!ONCE){
+						console.log("got to STAGE 1 - vanilla flavor");
+						console.log(stream);
+						ONCE=true;
+					}
+					video.src = stream;
+					video.play();
+				}, errBack);
+			} else if(navigator.webkitGetUserMedia) { 
+				// WebKit-prefixed
+				console.log("got to STAGE 2 - WebKit-prefixed");
+				navigator.webkitGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			}
+			else if(navigator.mozGetUserMedia) { 
+				// Firefox-prefixed
+				console.log("got to STAGE 3 - Firefox-prefixed");
+				navigator.mozGetUserMedia(videoObj, function(stream){
+					video.src = window.URL.createObjectURL(stream);
+					video.play();
+				}, errBack);
+			}
+		}, false);
+
+		// Located from MDN WebRTC_API Taking Still Photos
+		function takePicture (colorObj) {
+			// colorObj ? colorObj : {r:255, g:255, b:255};
+	    var context = canvas.getContext('2d');
+	   	var img = document.getElementById('source');
+      //I think we have to draw the image in order to get the data from it.
+      context.drawImage(video, 0, 0);
+      // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
+      // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
+	  	var data = context.getImageData(0,0, canvas.width, canvas.height);
+    	// clear the canvas after we have our data
+    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+			window.buffer = new Uint8Array(data.data.length/4);
+    	processImage(context, data, null, canvas.width, img, colorObj);
+    	trackedObjects.removeSmallObjects();
+
+	  };
+
+		document.getElementById("snap").addEventListener('click', function (){
+			//Get the color from the color picker
+			var colorObj=hexToRGB(document.getElementById("background-color").value)
+			
+			takePicture(colorObj);
+			// var runTime = takePicture.bind(null, colorObj);
+			// var PID = setInterval(runTime, 100);
+			//clear previous intervals.  Future- should be exported to be canceled with a button.
+			// if (PID > 1){
+			// 	clearInterval(PID-1);
+			// };
+		});
+
+		document.getElementById("profile").addEventListener('click', function(){
+			// Takes a profile  and plots to the 3d scatterPlot
+			var context = canvas.getContext('2d');
+			context.drawImage(video, 0, 0);
+
+			var imgData = context.getImageData(0,0, canvas.width, canvas.height);
+			context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+			scatterPlot(imgData);
+			//TESTING!!!!TESTING!!!!!!
+			// bloomSearch(imgData);
+			buffer = new Uint8Array(imgData.data.length/4);
+		});
+
+
+
+		// getColorProfile will take a 20px by 20px box that will get a color profile of the image inside that box
+		function getColorProfile(context, imgData, canvasWidth, colorObj){
+
+			//calculate color by phasors - each phasor is 120 degrees apart.  (idea) take the absolute value of each vector the vectoral sum of all three phasors if white will be exactly in the center.  Near the edges will be 
+
+		};
+
+
+		function processImage (context, imgData, searchSignature, canvasWidth, overlay, colorObj){
+			var start = new Date;
+			// searchSignature is an object containing minWidth, minHeight, maxHeight, maxWidth, minRed, maxRed, minBlue, maxBlue, minGreen, maxGreen - all opacity will be assumed @255, so no setting provided
+			//optional --> lines equations to identify points/ratios of object proportions
+
+
+			//overlay will be an object containing whatever we want to overlay with meta-data for desired size based on % of found object 
+
+			// if machine learning can be found to be reasonable with time (local calculation likely)
+
+			//search idea, break picture into grid. Search 1/10000px or 1/2500 px for appropriate color, then surrounding px color to get shape.  store leftmost, right most, topmost ,bottomost to get box.  also store local height max +/- a few pixels.  also store local minimums +/- pixels.  attempt to plot a line to identify a general shape and compare top/bottom ratios with provided ratios.   start with 640x480 and see how that goes. 
+			//another idea with M Macatano, create color count for blocks of size 100x100 or so.
+			//Basic Search - search every pixel.
+			//make new array to store results
+			var resolution = 1; //must be even divisible (width /resolution)  object tracking depends on exact grid 
+
+			var pos;
+			var average = {
+				x:0,
+				y:0,
+				counter:0
+			};
+		
+
+			// guessed mcdonalds colors >150, >150, <120 RGB
+			// better color identification could be identified by 3 phase - vector analysis
+			// context.fillStyle = "yellow";
+			
+			// resolution * 4 addresses rgba convention
+			for (var i = 0; i < imgData.data.length; i+=resolution*4){
+				linearObjSearch(imgData, i, canvas.width, resolution);
+				// pos = xyTranslate(i, canvasWidth);
+
+				// context.fillRect(pos.x, pos.y, 1, 1);
+			// 	if (
+			// 		colorFilter(imgData, i, colorObj)
+			// 		//check surrounding pixels
+			// 			//get the surrounding pixels
+			// 			//see if each of them is withing the color colorGradient
+						
+			// 		// && noiseReduce(imgData, i, canvasWidth, colorObj)
+			// 		&& colorGradient(imgData, i, colorObj, 50)
+			// 	){
+			// 		pos = xyTranslate(i, canvasWidth);
+			// 		average.counter+=1;
+			// 		average.x+=pos.x;
+			// 		average.y+=pos.y;
+			// 		context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
+			// 	}
+			}
+
+			for (var prop in trackedObjects){
+				if (typeof trackedObjects[prop] === 'object'){
+					//calculate box from each object
+					//calculate random color
+
+					context.strokeStyle = "rgba(255,100,100, .1)";//"black";
+					context.lineWidth = 1; 
+					// context.drawImage(overlay,average.x, average.y, 423, 119);
+					context.strokeRect(
+						trackedObjects[prop].leftMost, 
+						trackedObjects[prop].bottomMost, 
+						trackedObjects[prop].rightMost - trackedObjects[prop].leftMost, 
+						trackedObjects[prop].bottomMost - trackedObjects[prop].topMost
+					);
+					
+				}
+			
+
+			}
+
+			var stop = new Date;
+			console.log("Calc time each frame",stop-start);
+		};
+		
+	</script>
+</html>
