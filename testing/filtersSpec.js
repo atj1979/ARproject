@@ -10,7 +10,7 @@
       imgData.data = new Uint8Array(100*4);
       var buffer = new Uint8Array(imgData.data.length/4);
       //   0 1 2 3 4 5 6 7 8 9 
-      // 0|_|_|_|_|_|_|_|_|_|_|  x:0,y:0 
+      // 0|_|_|_|_|_|_|_|_|_|_|  x:0, y:0 
       // 1|_|_|_|_|_|_|_|_|_|_|
       // 2|_|_|_|_|_|_|_|_|_|_|
       // 3|_|_|_|_|_|_|_|_|_|_|
@@ -19,7 +19,7 @@
       // 6|_|_|_|_|_|_|_|_|_|_|
       // 7|_|_|_|_|_|_|_|_|_|_|
       // 8|_|_|_|_|_|_|_|_|_|_|
-      // 9|_|_|_|_|_|_|_|_|_|_|
+      // 9|_|_|_|_|_|_|_|_|_|_|  x:9, y:9
 
       it('xyTranslate', function() {
         assert.deepEqual(xyTranslate(0, 10),{x:0, y:0});
@@ -83,6 +83,14 @@
         centerColor.b = 10;
 
       });
+      
+      it('hexToRGB', function (){
+        assert.deepEqual(hexToRGB("#FF0000"),{r:255,g:0,b:0});
+        assert.deepEqual(hexToRGB("#00FF00"),{r:0,g:255,b:0});
+        assert.deepEqual(hexToRGB("#0000FF"),{r:0,g:0,b:255});
+        assert.deepEqual(hexToRGB("#FE86D0"),{r:254,g:134,b:208});
+      });
+
       it('getColors', function (){
         
         imgData.data[4] = 200;

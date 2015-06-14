@@ -45,7 +45,7 @@ var Shape = function (ID, leftMost, rightMost, topMost, bottomMost, pixelCount){
 	this.rightMost = rightMost || 0,
 	this.topMost = topMost || 0,
 	this.bottomMost = bottomMost || 0,
-  this.pixelCount = pixelCount || 0,
+  this.pixelCount = pixelCount || 1,
   this.redTotal = 0,
   this.greenTotal = 0,
   this.blueTotal = 0
@@ -55,11 +55,15 @@ Shape.prototype.updateTrackedObject = function (index, width, imgData){
 	// console.log("updated tracked objects");
 	// get the current x & y of the 
 	var xy = xyTranslate(index, width, imgData);
+	// console.log(xy);
 	// this.id = nextId 
-	this.leftMost = xy.x < this.leftMost ? xy.x : this.leftMost;
-	this.rightMost = xy.x > this.rightMost ? xy.x : this.rightMost;
-	this.topMost = xy.y < this.topMost ? xy.y : this.topMost;
-	this.bottomMost = xy.y > this.bottomMost ? xy.y : this.bottomMost;
+	//if the shape was left at an un-initialized state, then update that state
+	
+
+	this.leftMost = this.leftMost === 0 || xy.x < this.leftMost ? xy.x : this.leftMost;
+	this.rightMost = this.rightMost === 0 || xy.x > this.rightMost ? xy.x : this.rightMost;
+	this.topMost = this.topMost === 0 || xy.y < this.topMost ? xy.y : this.topMost;
+	this.bottomMost = this.bottomMost === 0 || xy.y > this.bottomMost ? xy.y : this.bottomMost;
 	this.pixelCount++;
 	this.redTotal += imgData.data[index];
 	this.greenTotal += imgData.data[index+1];
