@@ -1,288 +1,100 @@
-(function home() {
+(function () {
   'use strict';
   var expect = chai.expect;
   var should = chai.should();
   var assert = chai.assert; 
   describe('Filter Spec', function() {
-    describe('identity', function() {
-      console.log("hello testing");
-      // var uniqueObject = {};
-      it('should fucking work', function() {
-        // expect(_.identity(1)).to.equal(1);
-        // expect(_.identity('string')).to.equal('string');
-        // expect(_.identity(false)).to.be.false;
-        // expect(_.identity(uniqueObject)).to.equal(uniqueObject);
-        expect(true).to.equal(true);
+    describe('Helper Functions', function() {
+      // imgData will be a 10 by 10 grid to keep it simple
+      var imgData = {};
+      imgData.data = new Uint8Array(100*4);
+      var buffer = new Uint8Array(imgData.data.length/4);
+      //   0 1 2 3 4 5 6 7 8 9 
+      // 0|_|_|_|_|_|_|_|_|_|_|  x:0,y:0 
+      // 1|_|_|_|_|_|_|_|_|_|_|
+      // 2|_|_|_|_|_|_|_|_|_|_|
+      // 3|_|_|_|_|_|_|_|_|_|_|
+      // 4|_|_|_|_|_|_|_|_|_|_|
+      // 5|_|_|_|_|_|_|_|_|_|_|
+      // 6|_|_|_|_|_|_|_|_|_|_|
+      // 7|_|_|_|_|_|_|_|_|_|_|
+      // 8|_|_|_|_|_|_|_|_|_|_|
+      // 9|_|_|_|_|_|_|_|_|_|_|
+
+      it('xyTranslate', function() {
+        assert.deepEqual(xyTranslate(0, 10),{x:0, y:0});
+        assert.deepEqual(xyTranslate(4, 10),{x:1, y:0});
+        assert.deepEqual(xyTranslate(8, 10),{x:2, y:0});
+        assert.deepEqual(xyTranslate(40, 10),{x:0, y:1});
+        assert.deepEqual(xyTranslate(180, 10),{x:5, y:4});
+        assert.deepEqual(xyTranslate(200, 10),{x:0, y:5});
+        assert.deepEqual(xyTranslate(396, 10),{x:9, y:9});
+      });
+      it('indexFromXY', function() {
+        // function indexFromXY (x, y, canvasWidth)
+        expect(indexFromXY(0,0,10)).to.equal(0);
+        expect(indexFromXY(1,0,10)).to.equal(4);
+        expect(indexFromXY(2,0,10)).to.equal(8);
+        expect(indexFromXY(0,1,10)).to.equal(40);
+        expect(indexFromXY(5,4,10)).to.equal(180);
+        expect(indexFromXY(0,5,10)).to.equal(200);
+        expect(indexFromXY(9,9,10)).to.equal(396);
+
+      });
+      it('colorRange', function (){
+        var centerColor = {
+          r:10,
+          g:10,
+          b:10
+        };
+        var compColor = {
+          r:14,
+          g:10,
+          b:10
+        };
+        var range = 5
+        // function colorRange(centerColor, compColor, range)
+        expect(colorRange(centerColor, compColor, range)).to.equal(true);
+        range = 3;
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        
+        compColor.r = 14;
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        compColor.r = 10;
+        expect(colorRange(centerColor, compColor, range)).to.equal(true);        
+        compColor.g = 14;
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        compColor.g = 10;
+        expect(colorRange(centerColor, compColor, range)).to.equal(true);
+        compColor.b = 14; 
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        compColor.b = 10;
+
+        centerColor.r = 14;
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        centerColor.r = 10;
+        expect(colorRange(centerColor, compColor, range)).to.equal(true);        
+        centerColor.g = 14;
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        centerColor.g = 10;
+        expect(colorRange(centerColor, compColor, range)).to.equal(true);
+        centerColor.b = 14; 
+        expect(colorRange(centerColor, compColor, range)).to.equal(false);
+        centerColor.b = 10;
+
+      });
+      it('getColors', function (){
+        
+        imgData.data[4] = 200;
+        imgData.data[4+1] = 200;
+        imgData.data[4+2] = 200;
+        assert.deepEqual(getColors(imgData, 4), {r:200, g:200, b:200});
+
+        imgData.data[44] = 200;
+        imgData.data[44+1] = 200;
+        imgData.data[44+2] = 200;
+        assert.deepEqual(getColors(imgData, 44), {r:200, g:200, b:200});
       });
     });
   });
 }());
-    // describe('first', function() {
-    //   it('should be able to pull out the first element of an array', function() {
-    //     expect(_.first([1,2,3])).to.equal(1);
-    //   });
-
-    //   it('should accept an index argument', function() {
-    //     expect(_.first([1,2,3], 2)).to.eql([1, 2]);
-    //   });
-
-    //   it('should return empty array if zero is passed in as the index', function() {
-    //     expect(_.first([1,2,3], 0)).to.eql([]);
-    //   });
-
-    //   it('should return all the array\'s elements if the index argument is larger than the length of the array', function() {
-    //     expect(_.first([1,2,3], 5)).to.eql([1, 2, 3]);
-    //   });
-    // });
-
-    // describe('last', function() {
-    //   it('should pull the last element from an array', function() {
-    //     expect(_.last([1,2,3])).to.equal(3);
-    //   });
-
-    //   it('should accept an index argument', function() {
-    //     expect(_.last([1,2,3], 2)).to.eql([2, 3]);
-    //   });
-
-    //   it('should return empty array if zero is passed in as the index', function() {
-    //     expect(_.last([1,2,3], 0)).to.eql([]);
-    //   });
-
-    //   it('should return all the array\'s elements if the index argument is larger than the length of the array', function() {
-    //     expect(_.last([1,2,3], 5)).to.eql([1, 2, 3]);
-    //   });
-    // });
-
-    // describe('each', function() {
-    //   it('should iterate over arrays, providing access to the element, index, and array itself', function() {
-    //     var animals = ['ant', 'bat', 'cat'];
-    //     var iterationInputs = [];
-
-    //     _.each(animals, function(animal, index, list) {
-    //       iterationInputs.push([animal, index, list]);
-    //     });
-
-    //     expect(iterationInputs).to.eql([
-    //       ['ant', 0, animals],
-    //       ['bat', 1, animals],
-    //       ['cat', 2, animals]
-    //     ]);
-    //   });
-
-    //   it('should only iterate over the array elements, not properties of the array', function() {
-    //     var animals = ['ant', 'bat', 'cat'];
-    //     var iterationInputs = [];
-
-    //     animals.shouldBeIgnored = 'Ignore me!';
-
-    //     _.each(animals, function(animal, index, list) {
-    //       iterationInputs.push([animal, index, list]);
-    //     });
-
-    //     expect(iterationInputs).to.eql([
-    //       ['ant', 0, animals],
-    //       ['bat', 1, animals],
-    //       ['cat', 2, animals]
-    //     ]);
-    //   });
-
-    //   it('should iterate over objects, providing access to the element, index, and object itself', function() {
-    //     var animals = { a: 'ant', b: 'bat', c: 'cat' };
-    //     var iterationInputs = [];
-
-    //     _.each(animals, function(animal, key, object) {
-    //       iterationInputs.push([animal, key, object]);
-    //     });
-
-    //     expect(iterationInputs).to.eql([
-    //       ['ant', 'a', animals],
-    //       ['bat', 'b', animals],
-    //       ['cat', 'c', animals]
-    //     ]);
-    //   });
-    // });
-
-    // describe('indexOf', function() {
-    //   it('should find 40 in the list', function() {
-    //     var numbers = [10, 20, 30, 40, 50];
-
-    //     expect(_.indexOf(numbers, 40)).to.equal(3);
-    //   });
-
-    //   it('should be able to compute indexOf even when the native function is undefined', function() {
-    //     var numbers = [10, 20, 30];
-
-    //     expect(_.indexOf(numbers, 20)).to.equal(1);
-    //   });
-
-    //   it('returns -1 when the target cannot be found not in the list', function() {
-    //     var numbers = [10, 20, 30, 40, 50];
-
-    //     expect(_.indexOf(numbers, 35)).to.equal(-1);
-    //   });
-
-    //   it('returns the first index that the target can be found at when there are multiple matches', function() {
-    //     var numbers = [1, 40, 40, 40, 40, 40, 40, 40, 50, 60, 70];
-
-    //     expect(_.indexOf(numbers, 40)).to.equal(1);
-    //   });
-    // });
-
-    // describe('filter', function() {
-    //   it('should return all even numbers in an array', function() {
-    //     var isEven = function(num) { return num % 2 === 0; };
-    //     var evens = _.filter([1, 2, 3, 4, 5, 6], isEven);
-
-    //     expect(evens).to.eql([2, 4, 6]);
-    //   });
-
-    //   it('should return all odd numbers in an array', function() {
-    //     var isOdd = function(num) { return num % 2 !== 0; };
-    //     var odds = _.filter([1, 2, 3, 4, 5, 6], isOdd);
-
-    //     expect(odds).to.eql([1, 3, 5]);
-    //   });
-
-    //   it('should produce a brand new array instead of modifying the input array', function() {
-    //     var isOdd = function(num) { return num % 2 !== 0; };
-    //     var numbers = [1, 2, 3, 4, 5, 6];
-    //     var evens = _.filter(numbers, isOdd);
-
-    //     expect(evens).to.not.equal(numbers);
-    //   });
-    // });
-
-    // describe('reject', function() {
-    //   it('should reject all even numbers', function() {
-    //     var isEven = function(num) { return num % 2 === 0; };
-    //     var odds = _.reject([1, 2, 3, 4, 5, 6], isEven);
-
-    //     expect(odds).to.eql([1, 3, 5]);
-    //   });
-
-    //   it('should reject all odd numbers', function() {
-    //     var isOdd = function(num) { return num % 2 !== 0; };
-    //     var evens = _.reject([1, 2, 3, 4, 5, 6], isOdd);
-
-    //     expect(evens).to.eql([2, 4, 6]);
-    //   });
-
-    //   it('should produce a brand new array instead of modifying the input array', function() {
-    //     var isOdd = function(num) { return num % 2 !== 0; };
-    //     var numbers = [1, 2, 3, 4, 5, 6];
-    //     var evens = _.reject(numbers, isOdd);
-
-    //     expect(evens).to.not.equal(numbers);
-    //   });
-    // });
-
-    // describe('uniq', function() {
-    //   it('should return all unique values contained in an unsorted array', function() {
-    //     var numbers = [1, 2, 1, 3, 1, 4];
-
-    //     expect(_.uniq(numbers)).to.eql([1, 2, 3, 4]);
-    //   });
-
-    //   it('should handle iterators that work with a sorted array', function() {
-    //     var iterator = function(value) { return value + 1; };
-    //     var numbers = [1, 2, 2, 3, 4, 4];
-
-    //     expect(_.uniq(numbers, true, iterator)).to.eql([1, 2, 3, 4]);
-    //   });
-
-    //   it('should produce a brand new array instead of modifying the input array', function() {
-    //     var numbers = [1, 2, 1, 3, 1, 4];
-    //     var uniqueNumbers = _.uniq(numbers);
-
-    //     expect(uniqueNumbers).to.not.equal(numbers);
-    //   });
-    // });
-
-    // describe('map', function() {
-    //   it('should apply a function to every value in an array', function() {
-    //     var doubledNumbers = _.map([1, 2, 3], function(num) {
-    //       return num * 2;
-    //     });
-
-    //     expect(doubledNumbers).to.eql([2, 4, 6]);
-    //   });
-
-    //   it('should produce a brand new array instead of modifying the input array', function() {
-    //     var numbers = [1, 2, 3];
-    //     var mappedNumbers = _.map(numbers, function(num) {
-    //       return num;
-    //     });
-
-    //     expect(mappedNumbers).to.not.equal(numbers);
-    //   });
-    // });
-
-    // describe('pluck', function() {
-    //   it('should return values contained at a user-defined property', function() {
-    //     var people = [
-    //       { name: 'moe', age: 30 },
-    //       { name: 'curly', age: 50 }
-    //     ];
-
-    //     expect(_.pluck(people, 'name')).to.eql(['moe', 'curly']);
-    //   });
-
-    //   it('should not modify the original array', function() {
-    //     var people = [
-    //       { name: 'moe', age: 30 },
-    //       { name: 'curly', age: 50 }
-    //     ];
-
-    //     _.pluck(people, 'name');
-
-    //     expect(people).to.eql([{ name: 'moe', age: 30 }, { name: 'curly', age: 50 }]);
-    //   });
-    // });
-
-    // describe('reduce', function() {
-    //   it('should be able to sum up an array', function() {
-    //     var add = function(tally, item) {return tally + item; };
-    //     var total = _.reduce([1, 2, 3], add, 0);
-
-    //     expect(total).to.equal(6);
-    //   });
-
-    //   it('should use the first element as an accumulator when none is given', function() {
-    //     var add = function(tally, item) {return tally + item; };
-    //     var total = _.reduce([1, 2, 3], add);
-
-    //     expect(total).to.equal(6);
-    //   });
-
-    //   it('should invoke the iterator on the first element when given an accumulator', function() {
-    //     var sumSquares = function(tally, item) {return tally + item * item; };
-    //     var total = _.reduce([2, 3], sumSquares, 0);
-
-    //     expect(total).to.equal(13);
-    //   });
-
-    //   it('should not invoke the iterator on the first element when using it as an accumulator', function() {
-    //     var sumSquares = function(tally, item) {return tally + item * item; };
-    //     var total = _.reduce([2, 3], sumSquares);
-
-    //     expect(total).to.equal(11);
-    //   });
-
-    // });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
