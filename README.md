@@ -31,5 +31,5 @@ Setup Server with Firebase Access
 Stage 2
 	Simple web page with feed from camera displayed overlayed with some other graphic
 
-
 Stage 3 
+	Take over the world.
