@@ -90,8 +90,8 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 		// double loops here based on radius 
 		// this is really a box, where the radius is the shortest distance to an edge
 
-		for (var ry = 0; ry <= 2 * radius; ry++){
-			for (var rx = 0; rx <= 2 * radius; rx++){
+		for (var ry = 0; ry <= 2 * radius; ry+=radius){
+			for (var rx = 0; rx <= 2 * radius; rx+=radius){
 				// console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
 				if (rx !== radius || ry !== radius ){
 					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));

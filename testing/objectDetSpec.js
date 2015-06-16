@@ -3,6 +3,18 @@
   var expect = chai.expect;
   var should = chai.should();
   var assert = chai.assert; 
+      //   0 1 2 3 4 5 6 7 8 9 
+      // 0|_|_|_|_|_|_|_|_|_|_|  x:0, y:0 
+      // 1|_|_|_|_|_|_|_|_|_|_|
+      // 2|_|_|_|_|_|_|_|_|_|_|
+      // 3|_|_|_|_|_|_|_|_|_|_|
+      // 4|_|_|_|_|_|_|_|_|_|_|
+      // 5|_|_|_|_|_|_|_|_|_|_|
+      // 6|_|_|_|_|_|_|_|_|_|_|
+      // 7|_|_|_|_|_|_|_|_|_|_|
+      // 8|_|_|_|_|_|_|_|_|_|_|
+      // 9|_|_|_|_|_|_|_|_|_|_|  x:9, y:9
+
   describe('Object Detection Spec', function() {
     // imgData will be a 10 by 10 grid to keep it simple
     var imgData = {};
@@ -79,6 +91,18 @@
         assert.deepEqual(getNearbyPx(imgData, 276, 1, 10),[]);
         assert.deepEqual(getNearbyPx(imgData, 352, 1, 10),[308,312,316,348,356,388,392,396]);
         assert.deepEqual(getNearbyPx(imgData, 360, 1, 10),[]);
+
+        assert.deepEqual(getNearbyPx(imgData, 176, 2, 10),[88,96,104,168,184,248,256,264]);
+
+        assert.deepEqual(getNearbyPx(imgData, 176, 3, 10),[44,56,68,164,188,284,296,308]);
+      });
+
+      it('toBufferIndex', function (){
+        expect(toBufferIndex(imgData, 0, buffer)).to.equal(0);
+        expect(toBufferIndex(imgData, 36, buffer)).to.equal(9);
+        expect(toBufferIndex(imgData, 200, buffer)).to.equal(50);
+        expect(toBufferIndex(imgData, 216, buffer)).to.equal(54);
+        expect(toBufferIndex(imgData, 396, buffer)).to.equal(99);
 
       });
 
