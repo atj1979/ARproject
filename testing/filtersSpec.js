@@ -25,9 +25,16 @@
         assert.deepEqual(xyTranslate(0, 10),{x:0, y:0});
         assert.deepEqual(xyTranslate(4, 10),{x:1, y:0});
         assert.deepEqual(xyTranslate(8, 10),{x:2, y:0});
+        assert.deepEqual(xyTranslate(12, 10),{x:3, y:0});
         assert.deepEqual(xyTranslate(40, 10),{x:0, y:1});
+        assert.deepEqual(xyTranslate(52, 10),{x:3, y:1});
         assert.deepEqual(xyTranslate(180, 10),{x:5, y:4});
         assert.deepEqual(xyTranslate(200, 10),{x:0, y:5});
+        assert.deepEqual(xyTranslate(228, 10),{x:7, y:5});
+        assert.deepEqual(xyTranslate(248, 10),{x:2, y:6});
+        assert.deepEqual(xyTranslate(252, 10),{x:3, y:6});
+        assert.deepEqual(xyTranslate(256, 10),{x:4, y:6});
+        assert.deepEqual(xyTranslate(292, 10),{x:3, y:7});
         assert.deepEqual(xyTranslate(396, 10),{x:9, y:9});
       });
       it('indexFromXY', function() {

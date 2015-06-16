@@ -88,8 +88,8 @@ function xyTranslate (inputIndex, canvasWidth, picData){
 	// keep referneces to calc number so there aren't multiple calculations for the same stuff.
 	var numAll = inputIndex / (canvasWidth * 4);
 	var yCalc = Math.floor(numAll);
-	var numX = ((numAll - yCalc) * (canvasWidth * 4 ));
-	var xCalc = Math.floor( numX / 4 );
+	var numX = inputIndex  - (canvasWidth * yCalc * 4);
+	var xCalc = numX / 4;
 	
 	//get x - divide by 4 to get which x pixel.  left of the decimal is which pixel.  
 	result.x = xCalc;

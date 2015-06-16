@@ -87,20 +87,14 @@ function getNearbyPx (imgData, pixelNum, radius, width){
 		&& xy.y - radius > 0
 		&& xy.y + radius < maxRows 
 		) {
-			// console.log("SHOULD GET INDICIES");
 		// double loops here based on radius 
 		// this is really a box, where the radius is the shortest distance to an edge
-		// indexFromXY(xy.x - radius, xy.y - radius)
-		// indexFromXY(xy.x - radius, xy.y)
-		// indexFromXY(xy.x - radius)
-
-
 
 		for (var ry = 0; ry <= 2 * radius; ry++){
 			for (var rx = 0; rx <= 2 * radius; rx++){
 				// console.log("radius " + radius + " | " + " rx " + rx + " | " + " ry " + ry); 
 				if (rx !== radius || ry !== radius ){
-					surrPxIndex.push(indexFromXY(xy.x - radius + rx*4, xy.y - radius + ry*4, width));
+					surrPxIndex.push(indexFromXY(xy.x - radius + rx, xy.y - radius + ry, width));
 				}
 			}
 		}

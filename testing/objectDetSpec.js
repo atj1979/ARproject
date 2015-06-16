@@ -34,40 +34,54 @@
         imgData.data[208+1] = 135;
         imgData.data[208+2] = 136;
         thang.updateTrackedObject(208, 10, imgData);
-        
         expect(thang.leftMost).to.equal(2);
         expect(thang.rightMost).to.equal(2);
         expect(thang.topMost).to.equal(5);
         expect(thang.bottomMost).to.equal(5);
-
         expect(thang.redTotal).to.equal(134);
         expect(thang.greenTotal).to.equal(135);
         expect(thang.blueTotal).to.equal(136);
-
         expect(thang.pixelCount).to.equal(2);
 
         imgData.data[252] = 134;
         imgData.data[252+1] = 135;
         imgData.data[252+2] = 136;
-        thang.updateTrackedObject(208, 10, imgData);
-        console.log(xyTranslate(252, 10, imgData));
-        
+        thang.updateTrackedObject(252, 10, imgData);
         expect(thang.leftMost).to.equal(2);
         expect(thang.rightMost).to.equal(3);
         expect(thang.topMost).to.equal(5);
         expect(thang.bottomMost).to.equal(6);
-
         expect(thang.redTotal).to.equal(268);
         expect(thang.greenTotal).to.equal(270);
         expect(thang.blueTotal).to.equal(272);
-
         expect(thang.pixelCount).to.equal(3);
 
-
-
-
+        imgData.data[228] = 134;
+        imgData.data[228+1] = 135;
+        imgData.data[228+2] = 136;
+        thang.updateTrackedObject(228, 10, imgData);
+        expect(thang.leftMost).to.equal(2);
+        expect(thang.rightMost).to.equal(7);
+        expect(thang.topMost).to.equal(5);
+        expect(thang.bottomMost).to.equal(6);
+        expect(thang.redTotal).to.equal(402);
+        expect(thang.greenTotal).to.equal(405);
+        expect(thang.blueTotal).to.equal(408);
+        expect(thang.pixelCount).to.equal(4);
 
       });
+
+      it('getNearbyPx', function (){
+        assert.deepEqual(getNearbyPx(imgData, 0, 1, 10),[]);
+        assert.deepEqual(getNearbyPx(imgData, 36, 1, 10),[]);
+        assert.deepEqual(getNearbyPx(imgData, 88, 1, 10),[44,48,52,84,92,124,128,132]);
+        assert.deepEqual(getNearbyPx(imgData, 228, 1, 10),[184,188,192,224,232,264,268,272]);
+        assert.deepEqual(getNearbyPx(imgData, 276, 1, 10),[]);
+        assert.deepEqual(getNearbyPx(imgData, 352, 1, 10),[308,312,316,348,356,388,392,396]);
+        assert.deepEqual(getNearbyPx(imgData, 360, 1, 10),[]);
+
+      });
+
 
     });
   });
