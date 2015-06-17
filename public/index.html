@@ -124,6 +124,7 @@
 	  	var data = context.getImageData(0,0, canvas.width, canvas.height);
     	// clear the canvas after we have our data
     	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+    	console.log("canvas width", canvas.width, "canvas height", canvas.height);
 			window.buffer = new Uint8Array(data.data.length/4);
     	processImage(context, data, null, canvas.width, img, colorObj);
     	trackedObjects.removeSmallObjects();

@@ -133,12 +133,11 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	//then label the the pixel the same as the previous 4 pixels
 	//if the previous 4 pixels are matched, but they do not have an object 
 	// make a new object with the new id
-	
 	var valid;
 	var nearbyPx = getNearbyPx(imgData, startIndex, radius, canvasWidth);
 	if (nearbyPx.length > 0){
 		valid = nearbyPx.every(function (startInd){
-			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 30);
+			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 20);
 		});
 	} else {
 		valid = false;
@@ -147,6 +146,8 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	if (valid){
 		var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
 		var index = toBufferIndex(imgData, startIndex, window.buffer);
+		
+		//If the buffer does not have an object already existing, make a new Shape to track.
 		if (!buffer[rowUp]){
 			// console.log("new object");
 			buffer[index] = trackedObjects.nextId;
@@ -174,6 +175,30 @@ function toBufferIndex(imgData, startIndex, buffer){
 	var ratio = imgData.data.length/buffer.length;
 	// return the 
 	return startIndex/ratio; 
+
+};
+
+function showBuffer(width){
+	var line = "";
+	var temp = "";
+	for (var i =0; i < window.buffer.length +1; i++){
+		console.log(counting);
+		if (i+1 % width === 0){
+			console.log(line);
+			line = "";
+		}
+		temp = (window.buffer[i]+"");
+		if (temp.length < 3){
+			temp = "0" + window.buffer[i];
+		} else {
+			temp = window.buffer[i] + "";
+		}
+		line = line + " | "+ temp+"";
+	}
+
+
+
+	
 
 };
 

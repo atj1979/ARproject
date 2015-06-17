@@ -33,7 +33,7 @@
         expect(thing.bottomMost).to.equal(5);
         expect(thing.pixelCount).to.equal(6);
       });
-
+      console.log(thing)
       it('toBufferIndex',function (){
         expect(toBufferIndex(imgData, 0, buffer)).to.equal(0);
         expect(toBufferIndex(imgData, 200, buffer)).to.equal(50); 
@@ -80,6 +80,7 @@
         expect(thang.greenTotal).to.equal(405);
         expect(thang.blueTotal).to.equal(408);
         expect(thang.pixelCount).to.equal(4);
+        console.log(thang);
 
       });
 
@@ -91,9 +92,8 @@
         assert.deepEqual(getNearbyPx(imgData, 276, 1, 10),[]);
         assert.deepEqual(getNearbyPx(imgData, 352, 1, 10),[308,312,316,348,356,388,392,396]);
         assert.deepEqual(getNearbyPx(imgData, 360, 1, 10),[]);
-
+        //check for different radius
         assert.deepEqual(getNearbyPx(imgData, 176, 2, 10),[88,96,104,168,184,248,256,264]);
-
         assert.deepEqual(getNearbyPx(imgData, 176, 3, 10),[44,56,68,164,188,284,296,308]);
       });
 
