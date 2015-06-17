@@ -145,7 +145,7 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	// console.dir(window.buffer);
 	if (valid){
 		var rowUp = toBufferIndex(imgData, nearbyPx[0], buffer);
-		var index = toBufferIndex(imgData, startIndex, window.buffer);
+		var index = toBufferIndex(imgData, startIndex, buffer);
 		
 		//If the buffer does not have an object already existing, make a new Shape to track.
 		if (!buffer[rowUp]){
@@ -153,8 +153,8 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
 
-			trackedObjects[trackedObjects.nextId+''] = new Shape();
-			trackedObjects[trackedObjects.nextId+''].updateTrackedObject(startIndex, canvasWidth, imgData);
+			trackedObjects[String(trackedObjects.nextId)] = new Shape();
+			trackedObjects[String(trackedObjects.nextId)].updateTrackedObject(startIndex, canvasWidth, imgData);
 			trackedObjects.nextId++;
 
 		} else {
@@ -164,7 +164,7 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			
 			buffer[index] = buffer[rowUp];
 			// console.log(trackedObjects[buffer[index]]);
-			trackedObjects[buffer[index]+""].updateTrackedObject(startIndex, canvasWidth, imgData);
+			trackedObjects[String(buffer[index])].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}
 	}
 };
@@ -179,27 +179,33 @@ function toBufferIndex(imgData, startIndex, buffer){
 };
 
 function showBuffer(width){
+	//This function only works after the buffer has been populated by snap-picture.
 	var line = "";
 	var temp = "";
-	for (var i =0; i < window.buffer.length +1; i++){
-		console.log(counting);
-		if (i+1 % width === 0){
+	var numDigit = String(buffer.length);
+	console.log(numDigit);
+	console.log(numDigit.length);
+	for (var i = 0; i < buffer.length; i++){
+		//print the line if we're at the end of the row and clear the line var for the next line.
+		if (i % width === 0){
 			console.log(line);
 			line = "";
 		}
-		temp = (window.buffer[i]+"");
-		if (temp.length < 3){
-			temp = "0" + window.buffer[i];
+		temp = String(buffer[i]);
+		// console.log(temp, temp.length, numDigit, numDigit.length);
+		if (temp.length < numDigit.length){
+
+			//add the right amount of zeros to make the numbers to make a nice grid.
+			for ( var j = 0; j< (numDigit.length-temp.length); j++){
+				temp = "0" + temp;
+				// console.log('0');
+			}
 		} else {
-			temp = window.buffer[i] + "";
+			console.log('else');
+			temp = String(buffer[i]);
 		}
-		line = line + " | "+ temp+"";
+		line = line + "|"+ temp+"";
 	}
-
-
-
-	
-
 };
 
 
