@@ -3,7 +3,7 @@ function imgDataToQuad(imgData, canvasWidth){
 	//function will take image data and make nested array quad with rgba values for each one of the quads.  [[R, G, B, A],[R, G, B, A],...] i.e. [[255,255,10,255],...]
 	var start = new Date;
   // limit data points to 9600 for processing time.
-  var multiple = imgData.data.length/2400;
+  var multiple = imgData.data.length/4;
 	var result = [];
 	for(i = 0; i < imgData.data.length; i +=multiple) {
     

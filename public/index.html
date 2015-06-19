@@ -116,6 +116,7 @@
 		function takePicture (colorObj) {
 			// colorObj ? colorObj : {r:255, g:255, b:255};
 	    var context = canvas.getContext('2d');
+	    console.dir(canvas);
 	   	var img = document.getElementById('source');
       //I think we have to draw the image in order to get the data from it.
       context.drawImage(video, 0, 0);
@@ -124,10 +125,9 @@
 	  	var data = context.getImageData(0,0, canvas.width, canvas.height);
     	// clear the canvas after we have our data
     	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-    	console.log("canvas width", canvas.width, "canvas height", canvas.height);
+    	// console.log("canvas width", canvas.width, "canvas height", canvas.height);
 			window.buffer = new Uint8Array(data.data.length/4);
     	processImage(context, data, null, canvas.width, img, colorObj);
-    	trackedObjects.removeSmallObjects();
 
 	  };
 
@@ -217,25 +217,23 @@
 			// 		context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
 			// 	}
 			}
+    	trackedObjects.removeSmallObjects(500);
 
 			for (var prop in trackedObjects){
 				if (typeof trackedObjects[prop] === 'object'){
 					//calculate box from each object
 					//calculate random color
 
-					context.strokeStyle = "rgba(255,100,100, .1)";//"black";
+					context.strokeStyle = "rgba(255,100,100, .5)";//"black";
 					context.lineWidth = 1; 
 					// context.drawImage(overlay,average.x, average.y, 423, 119);
 					context.strokeRect(
 						trackedObjects[prop].leftMost, 
-						trackedObjects[prop].bottomMost, 
+						trackedObjects[prop].topMost, 
 						trackedObjects[prop].rightMost - trackedObjects[prop].leftMost, 
 						trackedObjects[prop].bottomMost - trackedObjects[prop].topMost
-					);
-					
+					);	
 				}
-			
-
 			}
 
 			var stop = new Date;

@@ -1,7 +1,7 @@
 var trackedObjects = {
 	nextId : 1,
 	removeSmallObjects: function (objSize){
-		objSize = objSize || 10;
+		objSize = objSize || 400;
 		for (var prop in this){
 
 			if (typeof this[prop] === 'object'){
@@ -12,15 +12,16 @@ var trackedObjects = {
 				//decide this by getting the average color of an object
 			}
 		}
-		// for (var prop in this){
-		// 	if (
-		// 		this[prop].redTotal/this[prop].pixelCount <= 80 &&
-		// 		this[prop].greenTotal/this[prop].pixelCount <= 80 &&
-		// 		this[prop].blueTotal/this[prop].pixelCount <= 80
-		// 	){
-		// 		delete this[prop];
-		// 	}
-		// }
+
+
+		for( var i = 0; i < buffer.length; i++){
+			//if the object is no longer tracked and the buffer does not contain zero
+			if ( this[buffer[i]]===undefined && buffer[i] !== 0){
+				// console.log("object removed ", buffer[i]);
+				buffer[i]= 0;
+			}
+		}
+
 	},
 	resetID: function (){
 		// to reset the ID's we would need to also reset the grid of tracked objects as well
@@ -137,7 +138,7 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	var nearbyPx = getNearbyPx(imgData, startIndex, radius, canvasWidth);
 	if (nearbyPx.length > 0){
 		valid = nearbyPx.every(function (startInd){
-			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 20);
+			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 10);
 		});
 	} else {
 		valid = false;
@@ -148,7 +149,29 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 		var index = toBufferIndex(imgData, startIndex, buffer);
 		
 		//If the buffer does not have an object already existing, make a new Shape to track.
-		if (!buffer[rowUp]){
+		if (buffer [index-radius]){
+
+			// see if there's a buffer for the previous pixel  the buffer number equal to the line above's buffer - because that has already been calculated
+			// use the top left corner of the nearbyPx, that's easy to reason about.
+			
+			buffer[index] = buffer[index-radius];
+			// console.log(trackedObjects[buffer[index]]);
+			var something = trackedObjects[String(buffer[index])];
+			if (something === undefined ) {
+				console.log(index);
+			}
+			trackedObjects[String(buffer[index])].updateTrackedObject(startIndex, canvasWidth, imgData);
+		
+		} else if (buffer[rowUp]){
+
+			// set the buffer number equal to the line above's buffer - because that has already been calculated
+			// use the top left corner of the nearbyPx, that's easy to reason about.
+
+			buffer[index] = buffer[rowUp];
+			// console.log(trackedObjects[buffer[index]]);
+			trackedObjects[String(buffer[index])].updateTrackedObject(startIndex, canvasWidth, imgData);
+
+		} else {
 			// console.log("new object");
 			buffer[index] = trackedObjects.nextId;
 			// var Shape = function (leftMost, rightMost, topMost, bottomMost, pixelCount)
@@ -156,15 +179,6 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 			trackedObjects[String(trackedObjects.nextId)] = new Shape();
 			trackedObjects[String(trackedObjects.nextId)].updateTrackedObject(startIndex, canvasWidth, imgData);
 			trackedObjects.nextId++;
-
-		} else {
-			// console.log("found a match", valid, nearbyPx, index, buffer[index], buffer[rowUp]);
-			// set the buffer number equal to the line above's buffer - because that has already been calculated
-			// use the top left corner of the nearbyPx, that's easy to reason about.
-			
-			buffer[index] = buffer[rowUp];
-			// console.log(trackedObjects[buffer[index]]);
-			trackedObjects[String(buffer[index])].updateTrackedObject(startIndex, canvasWidth, imgData);
 		}
 	}
 };

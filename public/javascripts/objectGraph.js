@@ -1,7 +1,7 @@
 //getPixelEdges will evaluate a reference pixel and the surrounding pixels to define any connections between pixels
 function getPixelEdges (startInd, imgData, width, radius){
 	//first, get the surrounding 8 pixels
-	var colorRadius = colorRadius || 20;
+	var colorRadius = colorRadius || 40;
 	var storage = {};
 	var nearby = getNearbyPx(imgData, startIndex, radius, canvasWidth);
 	var valid;
