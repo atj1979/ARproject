@@ -115,6 +115,7 @@
 		// Located from MDN WebRTC_API Taking Still Photos
 		function takePicture (colorObj) {
 			// colorObj ? colorObj : {r:255, g:255, b:255};
+			var canvas = document.getElementById('canvas');
 	    var context = canvas.getContext('2d');
 	    console.dir(canvas);
 	   	var img = document.getElementById('source');
@@ -122,12 +123,12 @@
       context.drawImage(video, 0, 0);
       // get the image data using canvas.getContext('2d').getImageData(starting x, starting y, width from x, height from y);
       // the resultant data is a one dimensional array, every 4 elements are on pixel with the RGBA order ranged 0-255 (red green blue opacity)
-	  	var data = context.getImageData(0,0, canvas.width, canvas.height);
+	  	var data = context.getImageData(0,0, canvas.clientWidth, canvas.clientHeight);
     	// clear the canvas after we have our data
-    	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-    	// console.log("canvas width", canvas.width, "canvas height", canvas.height);
+    	context.clearRect ( 0 , 0 , canvas.clientWidth, canvas.clientHeight );
 			window.buffer = new Uint8Array(data.data.length/4);
-    	processImage(context, data, null, canvas.width, img, colorObj);
+			console.log(canvas.clientWidth);
+    	processImage(context, data, null, canvas.clientWidth, img, colorObj);
 
 	  };
 
@@ -146,11 +147,12 @@
 
 		document.getElementById("profile").addEventListener('click', function(){
 			// Takes a profile  and plots to the 3d scatterPlot
+			var canvas = document.getElementById('canvas');
 			var context = canvas.getContext('2d');
 			context.drawImage(video, 0, 0);
 
-			var imgData = context.getImageData(0,0, canvas.width, canvas.height);
-			context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+			var imgData = context.getImageData(0,0, canvas.clientWidth, canvas.height);
+			context.clearRect ( 0 , 0 , canvas.clientWidth, canvas.height );
 			scatterPlot(imgData);
 			//TESTING!!!!TESTING!!!!!!
 			// bloomSearch(imgData);
@@ -197,7 +199,7 @@
 			
 			// resolution * 4 addresses rgba convention
 			for (var i = 0; i < imgData.data.length; i+=resolution*4){
-				linearObjSearch(imgData, i, canvas.width, resolution);
+				linearObjSearch(imgData, i, canvas.clientWidth, resolution);
 				// pos = xyTranslate(i, canvasWidth);
 
 				// context.fillRect(pos.x, pos.y, 1, 1);
@@ -217,21 +219,26 @@
 			// 		context.fillRect(pos.x, pos.y, resolution/4 + 1 , resolution/4 + 1);
 			// 	}
 			}
-    	trackedObjects.removeSmallObjects(500);
+    	trackedObjects.removeSmallObjects(2000);
 
 			for (var prop in trackedObjects){
 				if (typeof trackedObjects[prop] === 'object'){
 					//calculate box from each object
 					//calculate random color
+					var obj = trackedObjects[prop];
+
+
+
+					
 
 					context.strokeStyle = "rgba(255,100,100, .5)";//"black";
 					context.lineWidth = 1; 
 					// context.drawImage(overlay,average.x, average.y, 423, 119);
 					context.strokeRect(
-						trackedObjects[prop].leftMost, 
-						trackedObjects[prop].topMost, 
-						trackedObjects[prop].rightMost - trackedObjects[prop].leftMost, 
-						trackedObjects[prop].bottomMost - trackedObjects[prop].topMost
+						obj.leftMost, 
+						obj.topMost, 
+						obj.rightMost - obj.leftMost, 
+						obj.bottomMost - obj.topMost
 					);	
 				}
 			}

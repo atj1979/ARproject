@@ -49,7 +49,8 @@ var Shape = function (ID, leftMost, rightMost, topMost, bottomMost, pixelCount){
   this.pixelCount = pixelCount || 1,
   this.redTotal = 0,
   this.greenTotal = 0,
-  this.blueTotal = 0
+  this.blueTotal = 0,
+  this.pixels = []
 };
 
 Shape.prototype.updateTrackedObject = function (index, width, imgData){ 
@@ -69,6 +70,7 @@ Shape.prototype.updateTrackedObject = function (index, width, imgData){
 	this.redTotal += imgData.data[index];
 	this.greenTotal += imgData.data[index+1];
 	this.blueTotal += imgData.data[index+2];
+	this.pixels.push(index);
 };
 
 function getNearbyPx (imgData, pixelNum, radius, width){
@@ -191,7 +193,26 @@ function toBufferIndex(imgData, startIndex, buffer){
 	return startIndex/ratio; 
 
 };
+function showObject(objId){
+	var obj = trackedObjects[objId];
+	var canvas = document.getElementById('canvas');  
+	var context = canvas.getContext('2d');
+	context.fillStyle = "green";
 
+
+	// console.log(canvas.width);
+	obj.pixels.forEach(function (val){
+		var pos = xyTranslate(val, canvas.clientWidth); 
+		context.fillRect(pos.x, pos.y, 1, 1);
+
+		
+	});
+
+
+
+
+
+};
 function showBuffer(width){
 	//This function only works after the buffer has been populated by snap-picture.
 	var line = "";
