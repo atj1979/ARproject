@@ -117,6 +117,8 @@
 			// colorObj ? colorObj : {r:255, g:255, b:255};
 			var canvas = document.getElementById('canvas');
 	    var context = canvas.getContext('2d');
+	    context.canvas.width=600;
+	    context.canvas.height=480;
 	    console.dir(canvas);
 	   	var img = document.getElementById('source');
       //I think we have to draw the image in order to get the data from it.

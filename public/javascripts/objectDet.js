@@ -140,7 +140,7 @@ function linearObjSearch (imgData, startIndex, canvasWidth, radius){
 	var nearbyPx = getNearbyPx(imgData, startIndex, radius, canvasWidth);
 	if (nearbyPx.length > 0){
 		valid = nearbyPx.every(function (startInd){
-			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 10);
+			return colorRange(getColors(imgData, startIndex), getColors(imgData, startInd), 50);
 		});
 	} else {
 		valid = false;

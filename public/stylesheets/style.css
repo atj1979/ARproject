@@ -9,6 +9,8 @@ a {
 
 canvas {
 	/*float:left;*/
+	width:600px;
+	height:480px;
 	z-index: 1
 }
 
