@@ -128,7 +128,7 @@
 	  	var data = context.getImageData(0,0, canvas.clientWidth, canvas.clientHeight);
     	// clear the canvas after we have our data
     	context.clearRect ( 0 , 0 , canvas.clientWidth, canvas.clientHeight );
-			window.buffer = new Uint8Array(data.data.length/4);
+			window.buffer = new Uint16Array(data.data.length/4);
 			console.log(canvas.clientWidth);
     	processImage(context, data, null, canvas.clientWidth, img, colorObj);
 
@@ -158,7 +158,7 @@
 			scatterPlot(imgData);
 			//TESTING!!!!TESTING!!!!!!
 			// bloomSearch(imgData);
-			buffer = new Uint8Array(imgData.data.length/4);
+			buffer = new Uint16Array(imgData.data.length/4);
 		});
 
 
