@@ -50,18 +50,15 @@
 	  window.buffer =""; 
 		
 
-	/* Image process idea.  
-		per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
-		per image if pixel color matches designated color within a range, 
-			begin searching surrounding pixels, 
-				Stage 1 : only store left most, right most, top most, bottom most 
-					This gets a box to work with
-				Stage 2 : identify local minimums and maximums within range of +/- a few pixels 
-					This should get us points to draw a line and identify an aspect for image rendering and aid in shape recognition
-	*/
-
-
-
+		/* Image process idea.  
+			per image - define minimum size ( 100x100 in field of 1000x1000) <- performance idea
+			per image if pixel color matches designated color within a range, 
+				begin searching surrounding pixels, 
+					Stage 1 : only store left most, right most, top most, bottom most 
+						This gets a box to work with
+					Stage 2 : identify local minimums and maximums within range of +/- a few pixels 
+						This should get us points to draw a line and identify an aspect for image rendering and aid in shape recognition
+		*/
 
 
 
@@ -228,10 +225,6 @@
 					//calculate box from each object
 					//calculate random color
 					var obj = trackedObjects[prop];
-
-
-
-					
 
 					context.strokeStyle = "rgba(255,100,100, .5)";//"black";
 					context.lineWidth = 1; 
